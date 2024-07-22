@@ -48,6 +48,9 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
+        with:
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_BACKEND_API_URL: ${{ secrets.CLERK_BACKEND_API_URL }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
