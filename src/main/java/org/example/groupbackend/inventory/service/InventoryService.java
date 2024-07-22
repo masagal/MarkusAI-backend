@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.inventory.model.InventoryDbRepo;
 import org.example.groupbackend.inventory.model.InventoryItem;
+import org.example.groupbackend.products.Product;
+import org.example.groupbackend.products.ProductDbRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,13 +16,16 @@ public class InventoryService {
     Logger logger = LogManager.getLogger();
 
     InventoryDbRepo inventoryRepo;
+    ProductDbRepo productRepo;
 
-    public InventoryService(InventoryDbRepo inventoryRepo) {
+    public InventoryService(InventoryDbRepo inventoryRepo, ProductDbRepo productRepo) {
         this.inventoryRepo = inventoryRepo;
+        this.productRepo = productRepo;
     }
 
     public InventoryItem createItem(String label, Integer quantity) {
-        InventoryItem item = new InventoryItem(label, quantity);
+        Product product = productRepo.getByName(label);
+        InventoryItem item = new InventoryItem(product, quantity);
         inventoryRepo.save(item);
         return item;
     }

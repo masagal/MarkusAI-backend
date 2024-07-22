@@ -15,7 +15,7 @@ public class InventoryItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     Product product;
 
     Integer quantity;
@@ -24,13 +24,13 @@ public class InventoryItem {
         logger.warn("Empty inventory item created.");
     }
 
-    public InventoryItem(String label) {
-        this.label = label;
+    public InventoryItem(Product product) {
+        this.product = product;
         this.quantity = 0;
     }
 
-    public InventoryItem(String label, Integer quantity) {
-        //this.label = label;
+    public InventoryItem(Product product, Integer quantity) {
+        this.product = product;
         this.quantity = quantity;
     }
 
@@ -38,16 +38,8 @@ public class InventoryItem {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getLabel() {
         return product.getName();
-    }
-
-    public void setLabel(String label) {
-        //this.label = label;
     }
 
     public Integer getQuantity() {
