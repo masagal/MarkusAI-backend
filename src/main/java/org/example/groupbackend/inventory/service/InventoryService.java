@@ -19,9 +19,10 @@ public class InventoryService {
         this.inventoryRepo = inventoryRepo;
     }
 
-    public void createItem(String label, Integer quantity) {
+    public InventoryItem createItem(String label, Integer quantity) {
         InventoryItem item = new InventoryItem(label, quantity);
         inventoryRepo.save(item);
+        return item;
     }
 
     public List<InventoryItem> getAll() {
