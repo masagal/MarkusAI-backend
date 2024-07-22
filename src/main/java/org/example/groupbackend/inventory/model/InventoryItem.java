@@ -11,7 +11,7 @@ public class InventoryItem {
     Logger logger = LogManager.getLogger();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     String label;
