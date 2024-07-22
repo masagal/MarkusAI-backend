@@ -1,4 +1,5 @@
 name: Build
+on: [push]
 
 env:
   AZURE_WEBAPP_NAME: FinalProjectMasagal   # set this to the name of your Azure Web App
@@ -7,11 +8,8 @@ env:
   CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
   CLERK_BACKEND_API_URL: ${{ secrets.CLERK_BACKEND_API_URL }}
 
-on:
-  pull_request:
-  workflow_dispatch:
-
 permissions:
+  checks: write
   contents: read
 
 jobs:
