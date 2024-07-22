@@ -1,12 +1,10 @@
 package org.example.groupbackend.inventory.http;
 
 import org.example.groupbackend.inventory.http.dto.InventoryItemDto;
+import org.example.groupbackend.inventory.http.dto.UpdateInventoryItemDto;
 import org.example.groupbackend.inventory.service.InventoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +27,11 @@ public class InventoryController {
                 .toList();
 
         return ResponseEntity.ok(list);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateItem(@RequestBody UpdateInventoryItemDto dto) {
+        service.updateQuantity(service.findById(dto.id()), dto.newQuantity());
+        return ResponseEntity.accepted().build();
     }
 }
