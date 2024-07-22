@@ -28,7 +28,7 @@ public class ClerkService {
         request.put("first_name", userDto.getName());
         request.put("email_address", new String[]{userDto.getEmail()});
         request.put("username", userDto.getName());
-        request.put("password", "defaultPassword"); //ask mathangi and simon for what to do with the password
+        request.put("password", "defaultPassword"); //generate random password
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
