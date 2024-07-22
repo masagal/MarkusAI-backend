@@ -1,8 +1,10 @@
 package org.example.groupbackend.request;
 
-import org.example.groupbackend.request.classesForTesting.UserTestClass;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/requests")
@@ -14,13 +16,23 @@ public class RequestController {
         this.requestService = requestService;
     }
 
-    /*@GetMapping
-    private ResponseEntity<Request> getAllRequests() {
-    }*/
-
     @PostMapping
-    private ResponseEntity<Request> postNewRequest(@RequestBody RequestDto requestDto) {
-        var postRequest = requestService.newRequest(new Request(requestDto.quantity()), requestDto.userId());
+    public ResponseEntity<Request> postNewRequest(@RequestBody RequestListDto requestListDto) {
+        var postRequest = requestService.newRequestWithProducts(requestListDto.requests(), requestListDto.userId());
         return ResponseEntity.ok(postRequest);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Request>> getAllRequests() {
+        var requests = requestService.getAllRequests();
+        return ResponseEntity.ok(requests);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
+        requestService.deleteRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.request.classesForTesting.UserTestClass;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,17 +19,26 @@ public class Request {
     @JoinColumn(name = "user_id")
     private UserTestClass userTest;
 
-    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "request", cascade ={ CascadeType.MERGE, CascadeType.REMOVE })
     private List<RequestProduct> products;
 
     public Request() {
-    }
-
-    public Request(List<RequestProduct> products) {
-        this.products = products;
+        this.products = new ArrayList<>();
     }
 
     public void setUserTest(UserTestClass userTest) {
         this.userTest = userTest;
+    }
+
+    public List<RequestProduct> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<RequestProduct> products) {
+        this.products = products;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
