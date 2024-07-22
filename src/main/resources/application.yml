@@ -14,7 +14,7 @@ spring:
     console:
       enabled: true
   config:
-    import: file:.env[.properties]
+    import: optional:file:.env[.properties]
 clerk:
   api:
     url: ${CLERK_BACKEND_API_URL}
