@@ -24,7 +24,7 @@ public class InventoryService {
     }
 
     public InventoryItem createItem(String label, Integer quantity) {
-        Product product = productRepo.getByName(label);
+        Product product = productRepo.getByName(label).orElse(new Product(label));
         InventoryItem item = new InventoryItem(product, quantity);
         inventoryRepo.save(item);
         return item;

@@ -1,6 +1,7 @@
 package org.example.groupbackend.products;
 
 import jakarta.persistence.*;
+import org.example.groupbackend.inventory.model.InventoryItem;
 
 @Entity
 @Table(name="products")
@@ -10,6 +11,14 @@ public class Product {
     Long id;
 
     String name;
+
+    public Product() {
+
+    }
+
+    public Product(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;

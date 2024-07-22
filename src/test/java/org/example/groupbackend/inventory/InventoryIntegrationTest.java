@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -42,7 +43,7 @@ class InventoryIntegrationTest {
     @Test
     public void shouldUpdateItemQuantity() throws Exception {
         String updatedQuantityRequestBody = """
-                {"id": "3", "new_quantity": "10"}
+                {"id": "3", "quantity": "10"}
                 """;
 
         var get = MockMvcRequestBuilders.get(InventoryController.ENDPOINT);
@@ -59,6 +60,7 @@ class InventoryIntegrationTest {
     }
 
     @ParameterizedTest
+    @DirtiesContext
     @ValueSource(strings = {"""
                 {"label": "Grue whiteboard marker"}
                 """, """

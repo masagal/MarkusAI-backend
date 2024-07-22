@@ -1,11 +1,11 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 -- noinspection SqlDialectInspectionForFile
 
-INSERT INTO products (id, name) VALUES (1, 'Blue whiteboard markers'),
-                                        (2, 'Green whiteboard markers'),
-                                        (3, 'Orange whiteboard markers'),
-                                        (4, 'Red whiteboard markers'),
-                                        (5, 'Oatly litres');
+INSERT INTO products (id, name) VALUES (default, 'Blue whiteboard markers'),
+                                        (default, 'Green whiteboard markers'),
+                                        (default, 'Orange whiteboard markers'),
+                                        (default, 'Red whiteboard markers'),
+                                        (default, 'Oatly litres');
 
 INSERT INTO inventory_items (id, product_id, quantity) VALUES ('1', 1, 4),
                                                          ('2', 2, 6),

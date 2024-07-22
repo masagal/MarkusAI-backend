@@ -15,7 +15,7 @@ public class InventoryItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     Product product;
 
     Integer quantity;
@@ -32,6 +32,14 @@ public class InventoryItem {
     public InventoryItem(Product product, Integer quantity) {
         this.product = product;
         this.quantity = quantity;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getId() {
