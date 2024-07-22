@@ -1,11 +1,11 @@
 package org.example.groupbackend.request;
 
 import jakarta.persistence.*;
-import org.example.groupbackend.inventory.model.InventoryItem;
-import org.example.groupbackend.request.classesForTesting.ProductTest;
+import org.example.groupbackend.products.Product;
 import org.example.groupbackend.request.classesForTesting.UserTestClass;
 
 import java.util.List;
+
 
 @Entity
 public class Request {
@@ -14,34 +14,21 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int quantity;
-
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserTestClass userTest;
 
-    @OneToMany
-    private List<InventoryItem> items;
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
+    private List<RequestProduct> products;
 
     public Request() {
     }
 
-    public Request(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public UserTestClass getUserTest() {
-        return userTest;
+    public Request(List<RequestProduct> products) {
+        this.products = products;
     }
 
     public void setUserTest(UserTestClass userTest) {
         this.userTest = userTest;
-    }
-
-    public void setProducts(List<InventoryItem> items) {
-        this.items = items;
     }
 }
