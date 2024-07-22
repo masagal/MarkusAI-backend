@@ -23,6 +23,8 @@ env:
   AZURE_WEBAPP_NAME: FinalProjectMasagal   # set this to the name of your Azure Web App
   JAVA_VERSION: '17'                  # set this to the Java version to use
   DISTRIBUTION: zulu                  # set this to the Java distribution
+  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+  CLERK_BACKEND_API_URL: ${{ secrets.CLERK_BACKEND_API_URL }}
 
 on:
   push:
@@ -48,9 +50,6 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
-        with:
-          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          CLERK_BACKEND_API_URL: ${{ secrets.CLERK_BACKEND_API_URL }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
