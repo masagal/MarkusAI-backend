@@ -1,7 +1,11 @@
 package org.example.groupbackend.request;
 
 import jakarta.persistence.*;
+import org.example.groupbackend.inventory.model.InventoryItem;
+import org.example.groupbackend.request.classesForTesting.ProductTest;
 import org.example.groupbackend.request.classesForTesting.UserTestClass;
+
+import java.util.List;
 
 @Entity
 public class Request {
@@ -14,6 +18,9 @@ public class Request {
 
     @ManyToOne
     private UserTestClass userTest;
+
+    @OneToMany
+    private List<InventoryItem> items;
 
     public Request() {
     }
@@ -32,5 +39,9 @@ public class Request {
 
     public void setUserTest(UserTestClass userTest) {
         this.userTest = userTest;
+    }
+
+    public void setProducts(List<InventoryItem> items) {
+        this.items = items;
     }
 }
