@@ -10,14 +10,20 @@ import java.util.stream.Collectors;
 public class userService {
 
     private final userRepository userRepository;
+    private final ClerkService clerkService;
 
     @Autowired
-    public userService(userRepository userRepository) {
+    public userService(userRepository userRepository, ClerkService clerkService) {
         this.userRepository = userRepository;
+        this.clerkService = clerkService;
     }
 
     public userDto saveUser(userDto userDto) {
-        User user = toEntity(userDto);
+        // Create user in Clerk
+        userDto clerkUser = clerkService.createUser(userDto);
+
+        // Save user in local database
+        User user = toEntity(clerkUser);
         userRepository.save(user);
         return toDto(user);
     }
@@ -29,6 +35,13 @@ public class userService {
     }
 
     public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Delete user from Clerk
+        clerkService.deleteUser(user.getId().toString());
+
+        // Delete user from local database
         userRepository.deleteById(id);
     }
 
