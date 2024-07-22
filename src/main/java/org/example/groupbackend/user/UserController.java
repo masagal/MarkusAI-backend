@@ -12,28 +12,28 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final userService userService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(userService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<userDto> addUser(@RequestBody userDto userDto) {
-        userDto savedUser = userService.saveUser(userDto);
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+        UserDto savedUser = userService.saveUser(userDto);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<userDto>> getAllUsers() {
-        List<userDto> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<userDto> getUserById(@PathVariable Long id) {
-        userDto user = userService.getUserById(id);
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        UserDto user = userService.getUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

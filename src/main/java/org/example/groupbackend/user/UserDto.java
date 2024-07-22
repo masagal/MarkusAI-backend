@@ -1,6 +1,6 @@
 package org.example.groupbackend.user;
 
-public class userDto {
+public class UserDto {
     private Long id;
     private String name;
     private String email;

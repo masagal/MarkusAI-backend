@@ -7,20 +7,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class userService {
+public class UserService {
 
-    private final userRepository userRepository;
+    private final UserRepository userRepository;
     private final ClerkService clerkService;
 
     @Autowired
-    public userService(userRepository userRepository, ClerkService clerkService) {
+    public UserService(UserRepository userRepository, ClerkService clerkService) {
         this.userRepository = userRepository;
         this.clerkService = clerkService;
     }
 
-    public userDto saveUser(userDto userDto) {
+    public UserDto saveUser(UserDto userDto) {
         // Create user in Clerk
-        userDto clerkUser = clerkService.createUser(userDto);
+        UserDto clerkUser = clerkService.createUser(userDto);
 
         // Save user in local database
         User user = toEntity(clerkUser);
@@ -28,7 +28,7 @@ public class userService {
         return toDto(user);
     }
 
-    public List<userDto> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -45,13 +45,13 @@ public class userService {
         userRepository.deleteById(id);
     }
 
-    public userDto getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         return userRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    private User toEntity(userDto userDto) {
+    private User toEntity(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
         user.setName(userDto.getName());
@@ -60,8 +60,8 @@ public class userService {
         return user;
     }
 
-    private userDto toDto(User user) {
-        userDto dto = new userDto();
+    private UserDto toDto(User user) {
+        UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());

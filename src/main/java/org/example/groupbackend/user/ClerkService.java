@@ -21,7 +21,7 @@ public class ClerkService {
         this.clerkApiKey = clerkApiKey;
     }
 
-    public userDto createUser(userDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         String url = clerkApiUrl + "/users";
 
         Map<String, Object> request = new HashMap<>();
@@ -46,14 +46,14 @@ public class ClerkService {
         }
     }
 
-    public userDto getUser(String userId) {
+    public UserDto getUser(String userId) {
         String url = clerkApiUrl + "/users/" + userId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(clerkApiKey);
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<userDto> response = restTemplate.exchange(url, HttpMethod.GET, entity, userDto.class);
+        ResponseEntity<UserDto> response = restTemplate.exchange(url, HttpMethod.GET, entity, UserDto.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
