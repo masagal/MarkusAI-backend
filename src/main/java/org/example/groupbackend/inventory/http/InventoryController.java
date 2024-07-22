@@ -40,7 +40,7 @@ public class InventoryController {
     @PostMapping
     public ResponseEntity<InventoryItemDto> createItem(@RequestBody UpdateInventoryItemDto dto) {
         if(dto.label() == null || dto.label().equals("")) {
-            throw new IllegalArgumentException("Cannot create an inventory item without a label.");
+            throw new IllegalArgumentException("Cannot create an inventory item without a name.");
         }
 
         Integer quantity = dto.quantity() != null ? Integer.valueOf(dto.quantity()) : 0;
@@ -49,5 +49,11 @@ public class InventoryController {
 
         URI location = URI.create(InventoryController.ENDPOINT + "/" + item.getId());
         return ResponseEntity.created(location).body(InventoryItemDto.getDto(item));
+    }
+
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<Void> deleteItem(@PathVariable String itemId) {
+        service.deleteProduct(service.findById(itemId));
+        return ResponseEntity.noContent().build();
     }
 }

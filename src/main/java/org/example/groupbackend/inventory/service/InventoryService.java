@@ -47,4 +47,7 @@ public class InventoryService {
         inventoryRepo.save(item);
     }
 
+    public void deleteProduct(InventoryItem item) {
+        inventoryRepo.delete(item);
+    }
 }

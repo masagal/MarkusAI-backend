@@ -78,4 +78,13 @@ class InventoryIntegrationTest {
                 .andExpect(jsonPath("$.id", not(is(empty()))));
 
     }
+
+    @Test
+    @DirtiesContext
+    public void shouldDeleteItem() throws Exception {
+        var delete = MockMvcRequestBuilders.delete(InventoryController.ENDPOINT + "/4");
+
+        mockMvc.perform(delete)
+                .andExpect(status().isNoContent());
+    }
 }
