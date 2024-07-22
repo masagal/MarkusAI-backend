@@ -13,5 +13,9 @@ spring:
   h2:
     console:
       enabled: true
-
-
+  config:
+    import: file:.env[.properties]
+clerk:
+  api:
+    url: ${CLERK_BACKEND_API_URL}
+    key: ${CLERK_SECRET_KEY}
