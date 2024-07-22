@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -37,5 +39,22 @@ class InventoryIntegrationTest {
                 .andExpect(jsonPath("$.length()", is(5)));
     }
 
+    @Test
+    public void shouldUpdateItemQuantity() throws Exception {
+        String updatedQuantityRequestBody = """
+                {"id": "3", "new_quantity": "10"}
+                """;
 
+        var get = MockMvcRequestBuilders.get(InventoryController.ENDPOINT);
+        var patch = MockMvcRequestBuilders.patch(InventoryController.ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedQuantityRequestBody);
+
+        mockMvc.perform(patch)
+                .andExpect(status().is(HttpStatus.ACCEPTED.value()));
+
+        mockMvc.perform(get)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[2].quantity", is("10")));
+    }
 }
