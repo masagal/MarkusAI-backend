@@ -3,6 +3,7 @@ package org.example.groupbackend.inventory.model;
 import jakarta.persistence.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.groupbackend.products.Product;
 
 @Entity
 @Table(name="inventory_items")
@@ -14,7 +15,8 @@ public class InventoryItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    String label;
+    @OneToOne
+    Product product;
 
     Integer quantity;
 
@@ -28,7 +30,7 @@ public class InventoryItem {
     }
 
     public InventoryItem(String label, Integer quantity) {
-        this.label = label;
+        //this.label = label;
         this.quantity = quantity;
     }
 
@@ -41,11 +43,11 @@ public class InventoryItem {
     }
 
     public String getLabel() {
-        return label;
+        return product.getName();
     }
 
     public void setLabel(String label) {
-        this.label = label;
+        //this.label = label;
     }
 
     public Integer getQuantity() {
