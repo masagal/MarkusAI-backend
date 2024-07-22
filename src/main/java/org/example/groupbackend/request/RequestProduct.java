@@ -1,9 +1,11 @@
 package org.example.groupbackend.request;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import org.example.groupbackend.products.Product;
 
 @Entity
+@Table(name = "request_products")
 public class RequestProduct {
 
     @Id
@@ -14,6 +16,7 @@ public class RequestProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Min(value = 0)
     private int quantity;
 
     @ManyToOne

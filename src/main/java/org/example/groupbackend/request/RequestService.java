@@ -2,23 +2,24 @@ package org.example.groupbackend.request;
 
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
-import org.example.groupbackend.request.classesForTesting.UserRepoTest;
-import org.example.groupbackend.request.classesForTesting.UserTestClass;
+import org.example.groupbackend.user.User;
+import org.example.groupbackend.user.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class RequestService {
 
     private final RequestRepository requestRepo;
     private final ProductDbRepo productDbRepo;
-    private final UserRepoTest userRepoTest;
+    private final UserRepository userRepo;
 
-    public RequestService(RequestRepository requestRepo, ProductDbRepo productDbRepo, UserRepoTest userRepoTest) {
+    public RequestService(RequestRepository requestRepo, ProductDbRepo productDbRepo, UserRepository userRepo) {
         this.requestRepo = requestRepo;
         this.productDbRepo = productDbRepo;
-        this.userRepoTest = userRepoTest;
+        this.userRepo = userRepo;
     }
 
     public Request createNewRequest() {
@@ -26,16 +27,12 @@ public class RequestService {
     }
 
     public Request newRequestWithProducts(List<RequestProduct> requestProds, Long userId) {
-        UserTestClass testUser = userRepoTest.findById(userId).get();
+        User user = userRepo.findById(userId).orElseThrow();
         Request newRequest = createNewRequest();
 
-        requestProds.forEach(prod -> {
-            Product product = productDbRepo.getByName(prod.getProduct().getName());
-            RequestProduct re = new RequestProduct(product, prod.getQuantity(), newRequest);
-            newRequest.getProducts().add(re);
-        });
+        addRequestProductsToRequest(requestProds, newRequest);
+        newRequest.setUserTest(user);
 
-        newRequest.setUserTest(testUser);
         return requestRepo.save(newRequest);
     }
 
@@ -44,6 +41,18 @@ public class RequestService {
     }
 
     public void deleteRequest(Long id) {
+        requestRepo.findById(id).orElseThrow();
         requestRepo.deleteById(id);
+    }
+
+    private void addRequestProductsToRequest(List<RequestProduct> requestProds, Request request) {
+        requestProds.forEach(prod -> {
+            Product product = productDbRepo.getByName(prod.getProduct().getName());
+            if (product == null) {
+                throw new NoSuchElementException("Product does not exist!");
+            }
+            RequestProduct reqProd = new RequestProduct(product, prod.getQuantity(), request);
+            request.getProducts().add(reqProd);
+        });
     }
 }

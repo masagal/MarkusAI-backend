@@ -1,14 +1,14 @@
 package org.example.groupbackend.request;
 
 import jakarta.persistence.*;
-import org.example.groupbackend.products.Product;
-import org.example.groupbackend.request.classesForTesting.UserTestClass;
+import org.example.groupbackend.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Entity
+@Table(name = "requests")
 public class Request {
 
     @Id
@@ -17,7 +17,7 @@ public class Request {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserTestClass userTest;
+    private User user;
 
     @OneToMany(mappedBy = "request", cascade ={ CascadeType.MERGE, CascadeType.REMOVE })
     private List<RequestProduct> products;
@@ -26,8 +26,8 @@ public class Request {
         this.products = new ArrayList<>();
     }
 
-    public void setUserTest(UserTestClass userTest) {
-        this.userTest = userTest;
+    public void setUserTest(User user) {
+        this.user = user;
     }
 
     public List<RequestProduct> getProducts() {

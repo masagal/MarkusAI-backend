@@ -7,8 +7,9 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping(RequestController.REQUEST_ENDPOINT)
 public class RequestController {
+    public static final String REQUEST_ENDPOINT = "/requests";
 
     private final RequestService requestService;
 
@@ -18,13 +19,13 @@ public class RequestController {
 
     @PostMapping
     public ResponseEntity<Request> postNewRequest(@RequestBody RequestListDto requestListDto) {
-        var postRequest = requestService.newRequestWithProducts(requestListDto.requests(), requestListDto.userId());
+        Request postRequest = requestService.newRequestWithProducts(requestListDto.requests(), requestListDto.userId());
         return ResponseEntity.ok(postRequest);
     }
 
     @GetMapping
     public ResponseEntity<List<Request>> getAllRequests() {
-        var requests = requestService.getAllRequests();
+        List<Request> requests = requestService.getAllRequests();
         return ResponseEntity.ok(requests);
     }
 
