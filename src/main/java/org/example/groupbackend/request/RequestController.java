@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(RequestController.REQUEST_ENDPOINT)
+@CrossOrigin
 public class RequestController {
     public static final String REQUEST_ENDPOINT = "/requests";
 
