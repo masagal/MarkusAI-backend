@@ -1,78 +1,79 @@
 package org.example.groupbackend.user;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ClerkService {
 
-    private final RestTemplate restTemplate;
-    private final String clerkApiUrl;
-    private final String clerkApiKey;
+    @Value("${clerk.api.url}")
+    private String clerkApiUrl;
 
-    public ClerkService(RestTemplate restTemplate, @Value("${clerk.api.url}") String clerkApiUrl, @Value("${clerk.api.key}") String clerkApiKey) {
+    @Value("${clerk.api.key}")
+    private String clerkApiKey;
+
+    private final RestTemplate restTemplate;
+
+    public ClerkService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.clerkApiUrl = clerkApiUrl;
-        this.clerkApiKey = clerkApiKey;
     }
 
     public UserDto createUser(UserDto userDto) {
         String url = clerkApiUrl + "/users";
 
-        Map<String, Object> request = new HashMap<>();
-        request.put("first_name", userDto.getName());
-        request.put("email_address", new String[]{userDto.getEmail()});
-        request.put("username", userDto.getName());
-        request.put("password", "defaultPassword"); //generate random password
-
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(clerkApiKey);
+        headers.set("Authorization", "Bearer " + clerkApiKey);
+        headers.set("Content-Type", "application/json");
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+        String username = userDto.getName().replaceAll("[^a-zA-Z0-9_-]", "_");
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            Map responseBody = response.getBody();
-            userDto.setId(Long.parseLong(responseBody.get("id").toString()));
-            return userDto;
-        } else {
-            throw new RuntimeException("Failed to create user in Clerk");
+        String requestBody = String.format("{\"first_name\":\"%s\", \"email_address\":[\"%s\"], \"username\":\"%s\", \"password\":\"%s\"}",
+                userDto.getName(), userDto.getEmail(), username, "secureRandomPassword");
+
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(response.getBody());
+                UserDto createdUser = new UserDto();
+                createdUser.setId(root.path("id").asLong());
+                createdUser.setName(root.path("first_name").asText());
+                createdUser.setEmail(root.path("email_addresses").get(0).path("email_address").asText());
+                createdUser.setIsAdmin(userDto.getIsAdmin());
+                return createdUser;
+            } else {
+                throw new RuntimeException("Failed to create user: " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Failed to create user: " + e.getResponseBodyAsString(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse response from Clerk: " + e.getMessage(), e);
         }
     }
 
-    public UserDto getUser(String userId) {
-        String url = clerkApiUrl + "/users/" + userId;
+    public void deleteUser(String clerkUserId) {
+        String url = clerkApiUrl + "/users/" + clerkUserId;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(clerkApiKey);
+        headers.set("Authorization", "Bearer " + clerkApiKey);
 
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        ResponseEntity<UserDto> response = restTemplate.exchange(url, HttpMethod.GET, entity, UserDto.class);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
-            throw new RuntimeException("Failed to retrieve user from Clerk");
-        }
-    }
-
-    public void deleteUser(String userId) {
-        String url = clerkApiUrl + "/users/" + userId;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(clerkApiKey);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
         ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, Void.class);
 
-        if (response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Failed to delete user from Clerk");
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Failed to delete user: " + response.getStatusCode());
         }
     }
 }
