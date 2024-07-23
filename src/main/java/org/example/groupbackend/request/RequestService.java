@@ -47,7 +47,7 @@ public class RequestService {
 
     private void addRequestProductsToRequest(List<RequestProduct> requestProds, Request request) {
         requestProds.forEach(prod -> {
-            Product product = productDbRepo.getByName(prod.getProduct().getName());
+            Product product = productDbRepo.getByName(prod.getProduct().getName()).orElseThrow(NoSuchElementException::new);
             if (product == null) {
                 throw new NoSuchElementException("Product does not exist!");
             }
