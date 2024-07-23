@@ -45,6 +45,12 @@ public class RequestService {
         requestRepo.deleteById(id);
     }
 
+    public void approveRequest(Long requestId, boolean approve) {
+        Request request = requestRepo.findById(requestId).orElseThrow(NoSuchElementException::new);
+        request.setApproved(approve);
+        requestRepo.save(request);
+    }
+
     private void addRequestProductsToRequest(List<RequestProduct> requestProds, Request request) {
         requestProds.forEach(prod -> {
             Product product = productDbRepo.getByName(prod.getProduct().getName()).orElseThrow(NoSuchElementException::new);
@@ -55,4 +61,6 @@ public class RequestService {
             request.getProducts().add(reqProd);
         });
     }
+
+
 }

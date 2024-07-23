@@ -22,8 +22,11 @@ public class Request {
     @OneToMany(mappedBy = "request", cascade ={ CascadeType.MERGE, CascadeType.REMOVE })
     private List<RequestProduct> products;
 
+    private boolean isApproved;
+
     public Request() {
         this.products = new ArrayList<>();
+        this.isApproved = false;
     }
 
     public void setUserTest(User user) {
@@ -40,5 +43,13 @@ public class Request {
 
     public Long getId() {
         return id;
+    }
+
+    public void setApproved(boolean approved) {
+        isApproved = approved;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
     }
 }

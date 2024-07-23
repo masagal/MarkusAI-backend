@@ -35,5 +35,11 @@ public class RequestController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping
+    public ResponseEntity<Void> approveRequest(@RequestBody RequestApprovalDto requestApprovalDto) {
+        requestService.approveRequest(requestApprovalDto.requestId(), requestApprovalDto.approve());
+        return ResponseEntity.ok().build();
+    }
+
 
 }
