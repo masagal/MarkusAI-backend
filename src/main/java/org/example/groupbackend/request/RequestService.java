@@ -4,6 +4,7 @@ import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.user.User;
 import org.example.groupbackend.user.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,8 +36,11 @@ public class RequestService {
         return requestRepo.save(newRequest);
     }
 
-    public List<Request> getAllRequests() {
-        return requestRepo.findAll();
+    public List<Request> getAllRequests(User user) {
+        if(user.getIsAdmin()) {
+            return requestRepo.findAll();
+        }
+        return requestRepo.findAllByUser(user);
     }
 
     public void deleteRequest(Long id) {

@@ -29,7 +29,7 @@ public class RequestController {
 
     @GetMapping
     public ResponseEntity<List<Request>> getAllRequests(User user) {
-        List<Request> requests = requestService.getAllRequests();
+        List<Request> requests = requestService.getAllRequests(user);
         return ResponseEntity.ok(requests);
     }
 
