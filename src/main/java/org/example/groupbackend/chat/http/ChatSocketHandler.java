@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatSocketHandler extends TextWebSocketHandler {
     Logger logger = LogManager.getLogger();
@@ -23,6 +25,8 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     private String apiKey;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
+
+    private final List<JsonNode> conversationHistory = new ArrayList<>();
 
     // Called after a WebSocket connection is established
     @Override
@@ -36,8 +40,15 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         logger.info("Received message: {}", message.getPayload());
 
         try {
+            // Add the user's message to the conversation history
+            conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "user").put("content", message.getPayload()));
+
             // Get response from ChatGPT API
-            String response = getChatGPTResponse(message.getPayload());
+            String response = getChatGPTResponse();
+
+            // Add the assistant's response to the conversation history
+            conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "assistant").put("content", response));
+
             logger.info("Sending response: {}", response);
             // Send the response back to the WebSocket client
             session.sendMessage(new TextMessage(response));
@@ -62,10 +73,12 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         logger.info("WebSocket connection closed: {} with status: {}", session.getId(), status);
+        // Clear the conversation history when the session is closed
+        conversationHistory.clear();
     }
 
     // Method to get response from OpenAI's ChatGPT
-    private String getChatGPTResponse(String userMessage) throws Exception {
+    private String getChatGPTResponse() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
 
@@ -73,10 +86,10 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
-        // Create request JSON with the user's message as the prompt
+        // Create request JSON with the conversation history
         String requestJson = "{" +
                 "\"model\":\"gpt-4\"," +
-                "\"messages\":[{\"role\":\"user\",\"content\":\"" + userMessage + "\"}]," +
+                "\"messages\":" + new ObjectMapper().writeValueAsString(conversationHistory) + "," +
                 "\"max_tokens\":150" +
                 "}";
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
