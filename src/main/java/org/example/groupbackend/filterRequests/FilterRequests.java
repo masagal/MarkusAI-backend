@@ -29,7 +29,18 @@ public class FilterRequests extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        if(request.getMethod().equals("OPTIONS")) {
+            //preflight
+            //add any routes that should not care about user tokens to this condition
+            doFilter(request, response, filterChain);
+            return;
+        }
         String token = request.getHeader("Authorization");
+        if(token == null) {
+            logger.warn("Null token received on request for {}", request.getRequestURI());
+            logger.warn("Headers look like: {}", request.getHeaderNames().toString());
+            logger.warn("Auth header looks like: {}", request.getHeader("Authorization"));
+        }
 
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();

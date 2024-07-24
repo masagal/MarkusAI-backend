@@ -1,5 +1,6 @@
 package org.example.groupbackend.user;
 
+import jakarta.servlet.ServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,13 @@ public class UserController {
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
         UserDto savedUser = userService.saveUser(userDto);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getMe(ServletRequest req) {
+        User user = (User) req.getAttribute("user");
+
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping
