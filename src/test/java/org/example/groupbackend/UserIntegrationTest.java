@@ -38,7 +38,7 @@ class UserIntegrationTest {
     }
 
     //fails because of secret not being exposed
-    /*@Test
+    @Test
     public void shouldCreateUser() throws Exception {
         String uniqueId = String.valueOf(System.currentTimeMillis()); // Use current time as a unique ID
         String newUserRequestBody = String.format("""
@@ -59,7 +59,7 @@ class UserIntegrationTest {
                 .andExpect(jsonPath("$.name", is("Test User " + uniqueId)))
                 .andExpect(jsonPath("$.email", is("testuser" + uniqueId + "@example.com")))
                 .andExpect(jsonPath("$.isAdmin", is(false)));
-    }*/
+    }
 
     @Test
     public void shouldGetAllUsers() throws Exception {
