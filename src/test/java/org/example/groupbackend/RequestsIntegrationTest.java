@@ -38,8 +38,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -50,16 +49,19 @@ public class RequestsIntegrationTest {
     @MockBean
     User user;
 
-    @Autowired
-    @InjectMocks
-    RequestController controller;
-
     @MockBean
     UserRepository userRepo;
     @MockBean
     RequestRepository requestRepo;
     @MockBean
     ProductDbRepo productRepo;
+
+    @Autowired
+    @InjectMocks
+    RequestController controller;
+    @Autowired
+    @InjectMocks
+    RequestService service;
 
     RequestProduct requestProduct = Mockito.mock(RequestProduct.class);
 
@@ -76,6 +78,7 @@ public class RequestsIntegrationTest {
             Mockito.when(productRepo.findAll()).thenReturn(List.of(product));
             Mockito.when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
             Mockito.when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+
         }
 
         @Test
@@ -87,14 +90,30 @@ public class RequestsIntegrationTest {
             assertEquals(response.getStatusCode(), HttpStatus.OK);
         }
 
-        public void cannotApproveRequest() {
+        @Test
+        public void canOnlySeeTheirOwnRequests() {
             fail();
+        }
+
+        @Test
+        public void cannotApproveRequest() {
+            Request request = new Request(user);
+            request.setProducts(List.of(requestProduct));
+            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(request));
+            RequestApprovalDto dto = new RequestApprovalDto(request.getId(), true);
+
+            var response = controller.approveRequest(dto);
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
 
     public class AdminUser {
         public void canCreateNewRequest() {
             fail();
+        }
+
+        public void canSeeAnyRequest() {
+
         }
 
         public void canApproveRequest() {
