@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -36,7 +38,7 @@ class UserIntegrationTest {
     }
 
     //fails because of secret not being exposed
-    /*@Test
+    @Test
     public void shouldCreateUser() throws Exception {
         String uniqueId = String.valueOf(System.currentTimeMillis()); // Use current time as a unique ID
         String newUserRequestBody = String.format("""
@@ -57,7 +59,7 @@ class UserIntegrationTest {
                 .andExpect(jsonPath("$.name", is("Test User " + uniqueId)))
                 .andExpect(jsonPath("$.email", is("testuser" + uniqueId + "@example.com")))
                 .andExpect(jsonPath("$.isAdmin", is(false)));
-    }*/
+    }
 
     @Test
     public void shouldGetAllUsers() throws Exception {
