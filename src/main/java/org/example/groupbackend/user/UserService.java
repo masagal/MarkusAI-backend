@@ -25,13 +25,14 @@ public class UserService {
         LOGGER.info("Creating user in Clerk: " + userDto.getEmail());
 
         // Create user in Clerk
-        UserDto clerkUser = clerkService.createUser(userDto);
+        UserClerkDto clerkUser = clerkService.createUser(userDto);
 
         // Save user in local database
         User user = toEntity(clerkUser);
         userRepository.save(user);
 
         LOGGER.info("User saved in local database with ID: " + user.getId());
+        LOGGER.info("User saved in local database with Clerk ID: " + user.getClerkId());
 
         return toDto(user);
     }
@@ -77,12 +78,12 @@ public class UserService {
         return userDto;
     }
 
-    private User toEntity(UserDto userDto) {
+    private User toEntity(UserClerkDto userClerkDto) {
         User user = new User();
-        user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setIsAdmin(userDto.getIsAdmin());
+        user.setClerkId(userClerkDto.clerkId());
+        user.setName(userClerkDto.name());
+        user.setEmail(userClerkDto.email());
+        user.setIsAdmin(userClerkDto.isAdmin());
         return user;
     }
 
