@@ -27,9 +27,7 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Request>> getAllRequests(ServletRequest request) {
-        User user = (User) request.getAttribute("user");
-        System.out.println("Is user an admin? " + user.getIsAdmin());
+    public ResponseEntity<List<Request>> getAllRequests() {
         List<Request> requests = requestService.getAllRequests();
         return ResponseEntity.ok(requests);
     }

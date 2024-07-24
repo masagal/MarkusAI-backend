@@ -22,13 +22,12 @@ public class RequestService {
         this.userRepo = userRepo;
     }
 
-    public Request createNewRequest() {
-        return requestRepo.save(new Request());
+    public Request createNewRequest(User user) {
+        return requestRepo.save(new Request(user));
     }
 
-    public Request newRequestWithProducts(List<RequestProduct> requestProds, Long userId) {
-        User user = userRepo.findById(userId).orElseThrow();
-        Request newRequest = createNewRequest();
+    public Request newRequestWithProducts(User user, List<RequestProduct> requestProds) {
+        Request newRequest = createNewRequest(user);
 
         addRequestProductsToRequest(requestProds, newRequest);
         newRequest.setUserTest(user);

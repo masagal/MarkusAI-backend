@@ -29,6 +29,11 @@ public class Request {
         this.isApproved = false;
     }
 
+    public Request(User user) {
+        this();
+        this.user = user;
+    }
+
     public void setUserTest(User user) {
         this.user = user;
     }
