@@ -7,10 +7,7 @@ import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.request.*;
 import org.example.groupbackend.user.User;
 import org.example.groupbackend.user.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -40,6 +37,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,21 +67,21 @@ public class RequestsIntegrationTest {
 
     RequestProduct requestProduct = Mockito.mock(RequestProduct.class);
 
+    @BeforeEach
+    void setup() {
+        Mockito.when(user.getIsAdmin()).thenReturn(false);
+
+        Product product = Mockito.mock(Product.class);
+        Mockito.when(requestProduct.getProduct()).thenReturn(product);
+        Mockito.when(product.getName()).thenReturn("Stinker's Snake Oil");
+        Mockito.when(productRepo.findAll()).thenReturn(List.of(product));
+        Mockito.when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
+        Mockito.when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+        Mockito.when(request.getAttribute("user")).thenReturn(user);
+    }
+
     @Nested
     public class RegularUser {
-
-        @BeforeEach
-        void setup() {
-            Mockito.when(user.getIsAdmin()).thenReturn(false);
-
-            Product product = Mockito.mock(Product.class);
-            Mockito.when(requestProduct.getProduct()).thenReturn(product);
-            Mockito.when(product.getName()).thenReturn("Stinker's Snake Oil");
-            Mockito.when(productRepo.findAll()).thenReturn(List.of(product));
-            Mockito.when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
-            Mockito.when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
-            Mockito.when(request.getAttribute("user")).thenReturn(user);
-        }
 
         @Test
         public void canCreateNewRequest() throws Exception {
@@ -115,17 +113,39 @@ public class RequestsIntegrationTest {
         }
     }
 
-    public class AdminUser {
-        public void canCreateNewRequest() {
-            fail();
+    @Nested
+    public class AdminUser extends RegularUser {
+
+        @BeforeEach
+        void setup() {
+            Mockito.when(user.getIsAdmin()).thenReturn(true);
         }
 
-        public void canSeeAnyRequest() {
+        @Test
+        @Override
+        public void canOnlySeeTheirOwnRequests() {
+            controller.getAllRequests(request);
 
+            verify(requestRepo).findAll();
+            Mockito.verify(requestRepo, never()).findAllByUser(user);
         }
 
+        @Test
+        @Disabled
+        @Override
+        public void cannotApproveRequest() {
+        }
+
+        @Test
         public void canApproveRequest() {
-            fail();
+            Request rRequest = new Request(user);
+            rRequest.setProducts(List.of(requestProduct));
+            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
+
+            RequestApprovalDto dto = new RequestApprovalDto(rRequest.getId(), true);
+
+            var response = controller.approveRequest(dto, request);
+            assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }
 }
