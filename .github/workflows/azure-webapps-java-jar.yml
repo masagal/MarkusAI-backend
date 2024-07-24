@@ -25,6 +25,7 @@ env:
   DISTRIBUTION: zulu                  # set this to the Java distribution
   CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
   CLERK_BACKEND_API_URL: ${{ secrets.CLERK_BACKEND_API_URL }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
 on:
   push:
