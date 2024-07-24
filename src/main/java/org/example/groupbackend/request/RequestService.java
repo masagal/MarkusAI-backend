@@ -7,6 +7,7 @@ import org.example.groupbackend.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -48,7 +49,14 @@ public class RequestService {
         requestRepo.deleteById(id);
     }
 
-    public void approveRequest(Long requestId, boolean approve) {
+    static public class NotAuthorizedException extends IllegalArgumentException {
+
+    }
+
+    public void approveRequest(User user, Long requestId, boolean approve) {
+        if(!user.getIsAdmin()) {
+            throw new NotAuthorizedException();
+        }
         Request request = requestRepo.findById(requestId).orElseThrow(NoSuchElementException::new);
         request.setApproved(approve);
         requestRepo.save(request);

@@ -104,13 +104,13 @@ public class RequestsIntegrationTest {
 
         @Test
         public void cannotApproveRequest() {
-            Request request = new Request(user);
-            request.setProducts(List.of(requestProduct));
-            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(request));
+            Request rRequest = new Request(user);
+            rRequest.setProducts(List.of(requestProduct));
+            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
 
-            RequestApprovalDto dto = new RequestApprovalDto(request.getId(), true);
+            RequestApprovalDto dto = new RequestApprovalDto(rRequest.getId(), true);
 
-            var response = controller.approveRequest(dto);
+            var response = controller.approveRequest(dto, request);
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }

@@ -3,6 +3,7 @@ package org.example.groupbackend.request;
 import jakarta.servlet.ServletRequest;
 import org.example.groupbackend.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +44,14 @@ public class RequestController {
     }
 
     @PatchMapping
-    public ResponseEntity<Void> approveRequest(@RequestBody RequestApprovalDto requestApprovalDto) {
-        requestService.approveRequest(requestApprovalDto.requestId(), requestApprovalDto.approve());
+    public ResponseEntity<Void> approveRequest(@RequestBody RequestApprovalDto requestApprovalDto, ServletRequest req) {
+        User user = (User) req.getAttribute("user");
+
+        try {
+            requestService.approveRequest(user, requestApprovalDto.requestId(), requestApprovalDto.approve());
+        } catch(RequestService.NotAuthorizedException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok().build();
     }
 
