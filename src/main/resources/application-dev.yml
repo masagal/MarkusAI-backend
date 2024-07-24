@@ -18,5 +18,7 @@ spring:
   sql:
     init:
       data-locations: classpath:data-dev.sql
-
+logging:
+  level:
+    root: debug
 
