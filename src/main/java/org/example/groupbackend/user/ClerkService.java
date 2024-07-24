@@ -26,7 +26,7 @@ public class ClerkService {
         this.restTemplate = restTemplate;
     }
 
-    public UserDto createUser(UserDto userDto) {
+    public UserClerkDto createUser(UserDto userDto) {
         String url = clerkApiUrl + "/users";
 
         HttpHeaders headers = new HttpHeaders();
@@ -42,16 +42,17 @@ public class ClerkService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            System.out.println("Clerk response: " + response.getBody());
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(response.getBody());
-                UserDto createdUser = new UserDto();
-                createdUser.setId(root.path("id").asLong());
-                createdUser.setName(root.path("first_name").asText());
-                createdUser.setEmail(root.path("email_addresses").get(0).path("email_address").asText());
-                createdUser.setIsAdmin(userDto.getIsAdmin());
-                return createdUser;
+                String clerkId = root.path("id").asText();
+                String firstName = root.path("first_name").asText();
+                String email = root.path("email_addresses").get(0).path("email_address").asText();
+                boolean isAdmin = userDto.getIsAdmin();
+
+                return new UserClerkDto(clerkId, firstName, email, isAdmin);
             } else {
                 throw new RuntimeException("Failed to create user: " + response.getStatusCode());
             }

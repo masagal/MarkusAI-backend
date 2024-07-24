@@ -16,6 +16,8 @@ public class User {
 
     private Boolean isAdmin;
 
+    private String clerkId;
+
     public Long getId() {
         return id;
     }
@@ -46,5 +48,13 @@ public class User {
 
     public void setIsAdmin(Boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public void setClerkId(String clerkId) {
+        this.clerkId = clerkId;
+    }
+
+    public String getClerkId() {
+        return clerkId;
     }
 }
