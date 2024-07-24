@@ -39,6 +39,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -92,7 +93,9 @@ public class RequestsIntegrationTest {
 
         @Test
         public void canOnlySeeTheirOwnRequests() {
-            fail();
+            controller.getAllRequests(user);
+
+            verify(requestRepo).findAllByUser(user);
         }
 
         @Test
@@ -100,6 +103,7 @@ public class RequestsIntegrationTest {
             Request request = new Request(user);
             request.setProducts(List.of(requestProduct));
             Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(request));
+
             RequestApprovalDto dto = new RequestApprovalDto(request.getId(), true);
 
             var response = controller.approveRequest(dto);
