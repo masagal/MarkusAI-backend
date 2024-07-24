@@ -22,13 +22,16 @@ public class RequestController {
     }
 
     @PostMapping
-    public ResponseEntity<Request> postNewRequest(@RequestBody RequestListDto requestListDto) {
-        Request postRequest = requestService.newRequestWithProducts(requestListDto.requests(), requestListDto.userId());
+    public ResponseEntity<Request> postNewRequest(@RequestBody RequestListDto requestListDto, ServletRequest req) {
+        User user = (User) req.getAttribute("user");
+
+        Request postRequest = requestService.newRequestWithProducts(user, requestListDto.requests());
         return ResponseEntity.ok(postRequest);
     }
 
     @GetMapping
-    public ResponseEntity<List<Request>> getAllRequests(User user) {
+    public ResponseEntity<List<Request>> getAllRequests(ServletRequest req) {
+        User user = (User) req.getAttribute("user");
         List<Request> requests = requestService.getAllRequests(user);
         return ResponseEntity.ok(requests);
     }

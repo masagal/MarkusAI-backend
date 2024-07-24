@@ -1,5 +1,6 @@
 package org.example.groupbackend;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Before;
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
@@ -56,6 +57,8 @@ public class RequestsIntegrationTest {
     RequestRepository requestRepo;
     @MockBean
     ProductDbRepo productRepo;
+    @MockBean
+    HttpServletRequest request;
 
     @Autowired
     @InjectMocks
@@ -79,21 +82,22 @@ public class RequestsIntegrationTest {
             Mockito.when(productRepo.findAll()).thenReturn(List.of(product));
             Mockito.when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
             Mockito.when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
-
+            Mockito.when(request.getAttribute("user")).thenReturn(user);
         }
 
         @Test
         public void canCreateNewRequest() throws Exception {
+
             RequestListDto dto = new RequestListDto(List.of(requestProduct), 1L);
 
-            var response = controller.postNewRequest(dto);
+            var response = controller.postNewRequest(dto, request);
 
             assertEquals(response.getStatusCode(), HttpStatus.OK);
         }
 
         @Test
         public void canOnlySeeTheirOwnRequests() {
-            controller.getAllRequests(user);
+            controller.getAllRequests(request);
 
             verify(requestRepo).findAllByUser(user);
         }
