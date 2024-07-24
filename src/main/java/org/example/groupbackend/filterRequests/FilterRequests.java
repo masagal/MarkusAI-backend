@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.user.User;
 import org.example.groupbackend.user.UserRepository;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import java.util.Base64;
 
 @Component
 public class FilterRequests extends OncePerRequestFilter {
+    Logger logger = LogManager.getLogger();
 
     private final UserRepository userRepo;
 
@@ -34,6 +37,12 @@ public class FilterRequests extends OncePerRequestFilter {
         String payload = new String(decoder.decode(chunks[1]));
         SubDto sub = new ObjectMapper().readValue(payload, SubDto.class);
         User user = userRepo.findByClerkId(sub.sub());
+        if(user == null) {
+            response.sendError(400, "User not found");
+            logger.warn("Read a token that referred to a user not found in our systems. " +
+                    "Killing the request and returning 400.");
+            return;
+        }
 
         request.setAttribute("user", user);
 
