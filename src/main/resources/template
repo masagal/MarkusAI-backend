@@ -1,0 +1,26 @@
+Here is the template for the database:
+
+CREATE TABLE products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE inventory_items (
+    id CHAR(36) PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    quantity INT,
+    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+Here are the products in the database:
+Blue whiteboard markers
+Green whiteboard markers
+Orange whiteboard markers
+Red whiteboard markers
+Oatly litres
+Black whiteboard markers
+Yellow whiteboard markers
+Purple whiteboard markers
+Erasers
+Whiteboard cleaner
+
