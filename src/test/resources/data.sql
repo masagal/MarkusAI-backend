@@ -13,5 +13,5 @@ INSERT INTO inventory_items (id, product_id, quantity) VALUES ('1', 1, 4),
                                                          ('4', 4, 6),
                                                          ('5', 5, 5);
 
-INSERT INTO users (id, email, name, is_admin) VALUES (1, 'stinker@whitehouse.gov','Stinker McGee', true);
-INSERT INTO users (id, email, name, is_admin) VALUES (2, 'asparagus666@gmail.com','Asparagus Germondsen', false);
+INSERT INTO users (id, email, name, is_admin) VALUES (default, 'stinker@whitehouse.gov','Stinker McGee', true);
+INSERT INTO users (id, email, name, is_admin) VALUES (default, 'asparagus666@gmail.com','Asparagus Germondsen', false);
