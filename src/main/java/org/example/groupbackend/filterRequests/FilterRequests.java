@@ -63,6 +63,6 @@ public class FilterRequests extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return "/api/users".equals(path) || path.contains("h2-console");
+        return "/api/users".equals(path) || path.contains("h2-console") || path.contains("/chat");
     }
 }
