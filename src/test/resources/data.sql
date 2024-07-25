@@ -12,3 +12,6 @@ INSERT INTO inventory_items (id, product_id, quantity) VALUES ('1', 1, 4),
                                                          ('3', 3, 6),
                                                          ('4', 4, 6),
                                                          ('5', 5, 5);
+
+INSERT INTO users (id, email, name, is_admin) VALUES (default, 'stinker@whitehouse.gov','Stinker McGee', true);
+INSERT INTO users (id, email, name, is_admin) VALUES (default, 'asparagus666@gmail.com','Asparagus Germondsen', false);

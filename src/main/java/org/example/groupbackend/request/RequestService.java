@@ -4,8 +4,10 @@ import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.user.User;
 import org.example.groupbackend.user.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,13 +24,12 @@ public class RequestService {
         this.userRepo = userRepo;
     }
 
-    public Request createNewRequest() {
-        return requestRepo.save(new Request());
+    public Request createNewRequest(User user) {
+        return requestRepo.save(new Request(user));
     }
 
-    public Request newRequestWithProducts(List<RequestProduct> requestProds, Long userId) {
-        User user = userRepo.findById(userId).orElseThrow();
-        Request newRequest = createNewRequest();
+    public Request newRequestWithProducts(User user, List<RequestProduct> requestProds) {
+        Request newRequest = createNewRequest(user);
 
         addRequestProductsToRequest(requestProds, newRequest);
         newRequest.setUserTest(user);
@@ -36,8 +37,11 @@ public class RequestService {
         return requestRepo.save(newRequest);
     }
 
-    public List<Request> getAllRequests() {
-        return requestRepo.findAll();
+    public List<Request> getAllRequests(User user) {
+        if(user.getIsAdmin()) {
+            return requestRepo.findAll();
+        }
+        return requestRepo.findAllByUser(user);
     }
 
     public void deleteRequest(Long id) {
@@ -45,7 +49,14 @@ public class RequestService {
         requestRepo.deleteById(id);
     }
 
-    public void approveRequest(Long requestId, boolean approve) {
+    static public class NotAuthorizedException extends IllegalArgumentException {
+
+    }
+
+    public void approveRequest(User user, Long requestId, boolean approve) {
+        if(!user.getIsAdmin()) {
+            throw new NotAuthorizedException();
+        }
         Request request = requestRepo.findById(requestId).orElseThrow(NoSuchElementException::new);
         request.setApproved(approve);
         requestRepo.save(request);
