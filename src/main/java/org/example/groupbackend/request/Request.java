@@ -38,6 +38,10 @@ public class Request {
         this.user = user;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public List<RequestProduct> getProducts() {
         return products;
     }
