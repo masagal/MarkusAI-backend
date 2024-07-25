@@ -29,7 +29,7 @@ public class FilterRequests extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        if(request.getMethod().equals("OPTIONS") || request.getRequestURI().contains("chat")) {
+        if(request.getMethod().equals("OPTIONS")) {
             //preflight
             //add any routes that should not care about user tokens to this condition
             doFilter(request, response, filterChain);
