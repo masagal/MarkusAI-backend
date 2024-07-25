@@ -2,7 +2,9 @@ package org.example.groupbackend.chat.http;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class ChatSocketHandler extends TextWebSocketHandler {
     Logger logger = LogManager.getLogger();
 
@@ -27,6 +30,12 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     private final List<JsonNode> conversationHistory = new ArrayList<>();
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public ChatSocketHandler(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     // Called after a WebSocket connection is established
     @Override
@@ -39,15 +48,32 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         logger.info("Received message: {}", message.getPayload());
 
+        List<String> insertStatements = ReadTemplate.readTemplate();
+
         try {
+            String requestJson = "{" +
+                    "message: " + message.getPayload() + ", " +
+                    "template: " + insertStatements + "," +
+                    "request: "+ "Build one sql statement to update the quantity of the item in the " +
+                    "message based on the template and put it in json format with key sqlStatement. " +
+                    "If the item is not in the template only respond with 'This item is not in the inventory'" +
+                    "}";
+
             // Add the user's message to the conversation history
-            conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "user").put("content", message.getPayload()));
+            conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "user").put("content", requestJson));
 
             // Get response from ChatGPT API
             String response = getChatGPTResponse();
 
             // Add the assistant's response to the conversation history
             conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "assistant").put("content", response));
+
+            if (response.contains("sqlStatement")) {
+                ExtractSQL sql = new ObjectMapper().readValue(response, ExtractSQL.class);
+                logger.info("Statement: {}", sql.sqlStatement());
+                jdbcTemplate.execute(sql.sqlStatement());
+            }
+
 
             logger.info("Sending response: {}", response);
             // Send the response back to the WebSocket client
