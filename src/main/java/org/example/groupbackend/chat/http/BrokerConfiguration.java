@@ -10,9 +10,11 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocket
 public class BrokerConfiguration implements WebSocketConfigurer {
     private final JdbcTemplate jdbcTemplate;
+    AiManager aiManager;
 
-    public BrokerConfiguration(JdbcTemplate jdbcTemplate) {
+    public BrokerConfiguration(JdbcTemplate jdbcTemplate, AiManager aiManager) {
         this.jdbcTemplate = jdbcTemplate;
+        this.aiManager = aiManager;
     }
 
     @Override
@@ -22,6 +24,6 @@ public class BrokerConfiguration implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler chatHandler() {
-        return new ChatSocketHandler(jdbcTemplate);
+        return new ChatSocketHandler(jdbcTemplate, aiManager);
     }
 }
