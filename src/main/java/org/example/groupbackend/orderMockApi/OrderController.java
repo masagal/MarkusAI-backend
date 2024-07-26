@@ -1,13 +1,12 @@
 package org.example.groupbackend.orderMockApi;
 
 import jakarta.servlet.ServletRequest;
-import org.example.groupbackend.request.Request;
+import org.example.groupbackend.request.RequestApprovalDto;
+import org.example.groupbackend.request.RequestService;
 import org.example.groupbackend.user.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,11 +22,26 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    @PostMapping
+    public ResponseEntity<Order> createNewOrder(@RequestBody OrderDto orderDto, ServletRequest req) {
+        User user = (User) req.getAttribute("user");
+        Order order = new Order(orderDto.status(), orderDto.approvedDate());
+        Order createdOrder = orderService.createNewOrder(user, order, orderDto.requestId());
+        return ResponseEntity.ok(createdOrder);
+    }
+
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders(ServletRequest req) {
         User user = (User) req.getAttribute("user");
         List<Order> orders = orderService.getAllOrders(user);
-        System.out.println("Order are here: " + orders);
         return ResponseEntity.ok(orders);
     }
+
+    @PatchMapping
+    public ResponseEntity<Void> changeStatusOfOrder(@RequestBody OrderStatusDto orderStatusDto, ServletRequest req) {
+        User user = (User) req.getAttribute("user");
+        orderService.changeStatusOfOrder(user, orderStatusDto.orderId(), orderStatusDto.orderStatus());
+        return ResponseEntity.ok().build();
+    }
+
 }

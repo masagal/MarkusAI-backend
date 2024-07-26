@@ -26,6 +26,14 @@ public class Order {
     @JoinColumn(name = "request_id")
     private Request request;
 
+    public Order() {
+    }
+
+    public Order(OrderStatus status, LocalDateTime approvedDate) {
+        this.status = status;
+        this.approvedDate = approvedDate;
+    }
+
     public User getUser() {
         return user;
     }
@@ -40,5 +48,17 @@ public class Order {
 
     public Request getRequest() {
         return request;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
     }
 }
