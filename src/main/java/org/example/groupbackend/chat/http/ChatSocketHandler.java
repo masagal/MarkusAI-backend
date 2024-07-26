@@ -33,6 +33,9 @@ public class ChatSocketHandler extends TextWebSocketHandler {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final List<String> insertStatements = ReadTemplate.readTemplate();
+
+
     public ChatSocketHandler(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -48,16 +51,14 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         logger.info("Received message: {}", message.getPayload());
 
-        List<String> insertStatements = ReadTemplate.readTemplate();
+        String holder = "Build one sql statement to update " +
+                "the quantity of the item in the message based on the template and put it in json " +
+                "format with key sqlStatement. If the item is not in the template only respond with " +
+                "'This item is not in the inventory'";
 
         try {
-            String requestJson = "{" +
-                    "message: " + message.getPayload() + ", " +
-                    "template: " + insertStatements + "," +
-                    "request: "+ "Build one sql statement to update the quantity of the item in the " +
-                    "message based on the template and put it in json format with key sqlStatement. " +
-                    "If the item is not in the template only respond with 'This item is not in the inventory'" +
-                    "}";
+
+            String requestJson = getRequestJson(message,"Follow the instructions in the template" );
 
             // Add the user's message to the conversation history
             conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "user").put("content", requestJson));
@@ -68,16 +69,37 @@ public class ChatSocketHandler extends TextWebSocketHandler {
             // Add the assistant's response to the conversation history
             conversationHistory.add(new ObjectMapper().createObjectNode().put("role", "assistant").put("content", response));
 
-            if (response.contains("sqlStatement")) {
+            logger.info("Response from gpt: " + response);
+            String quantity = "Problem finding quantity of the item";
+            if (response.contains("sqlStatement") && response.contains("SELECT quantity FROM inventory_items")) {
+                logger.info("We are in the if block for getting quantity");
+                ExtractSQL sql = new ObjectMapper().readValue(response, ExtractSQL.class);
+                logger.info("Statement: {}", sql.sqlStatement());
+                //jdbcTemplate.execute(sql.sqlStatement());
+                quantity = this.jdbcTemplate.queryForObject(
+                        sql.sqlStatement(),
+                        String.class);
+                logger.info("Quantity that was found with jdbc: " + quantity);
+                if (quantity != null && Integer.parseInt(quantity) > 0) {
+                    logger.info("Response should be replaced here" );
+
+                    response = "There are " + quantity + " of the item you are asking for. Do you want to make a request?";
+                }
+            }
+
+            if (message.getPayload().contains("yes") && response.contains("INSERT INTO")) {
+                logger.info("We are in the if block to for making a new request");
                 ExtractSQL sql = new ObjectMapper().readValue(response, ExtractSQL.class);
                 logger.info("Statement: {}", sql.sqlStatement());
                 jdbcTemplate.execute(sql.sqlStatement());
+                response = "Check your request page to see if the request has been made!";
             }
 
-
-            logger.info("Sending response: {}", response);
+            String modifiedResponse = response.replace("OpenAI", "Markus.AI");
+            logger.info("Sending response: {}", modifiedResponse);
             // Send the response back to the WebSocket client
-            session.sendMessage(new TextMessage(response));
+
+            session.sendMessage(new TextMessage(modifiedResponse));
         } catch (Exception e) {
             // Log error and close session with server error status
             logger.error("Error handling message: {}", e.getMessage(), e);
@@ -101,6 +123,17 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         logger.info("WebSocket connection closed: {} with status: {}", session.getId(), status);
         // Clear the conversation history when the session is closed
         conversationHistory.clear();
+    }
+
+
+    private String getRequestJson(TextMessage message, String request) {
+        String requestJson = "{" +
+                "message: " + message.getPayload() + ", " +
+                "template: " + insertStatements + "," +
+                "request: "+ request +
+                "}";
+
+        return requestJson;
     }
 
     // Method to get response from OpenAI's ChatGPT
