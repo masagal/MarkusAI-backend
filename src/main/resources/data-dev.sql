@@ -17,6 +17,7 @@ INSERT INTO users (email, name, is_admin) VALUES ('test@test.no','testUser', fal
 INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('admin@tolpuddle.tech', 'simon admin', true, 'user_2jbOj40LQGG8Y8RhHMgGO763eRq');
 INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('regular@tolpuddle.tech', 'simon regular', false, 'user_2jhcwIX4Gn6eY7PU7jBhaJcbOy6');
 INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('cypress+clerk_test@tolpuddle.tech', 'cypress admin', true, 'user_2jjMkCNC2oaUopPuZPwhtBlqdOA');
+INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('mathi.admin@gmail.com', 'Math math', true, 'user_2jm6AYThCDfPqMlHBO8jhwyPLMI');
 INSERT INTO requests (user_id, is_approved) VALUES (1, false);
 INSERT INTO requests (user_id, is_approved) VALUES (1, false);
 INSERT INTO request_products (product_id, request_id, quantity) VALUES (1, 1, 10);
