@@ -1,4 +1,4 @@
-package org.example.groupbackend.chat.http;
+package org.example.groupbackend.chat.sql;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

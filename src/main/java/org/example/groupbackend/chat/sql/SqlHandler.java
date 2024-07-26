@@ -1,6 +1,5 @@
 package org.example.groupbackend.chat.sql;
 
-import org.example.groupbackend.chat.http.ExtractSQL;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
