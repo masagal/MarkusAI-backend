@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.ai.AiManager;
-import org.example.groupbackend.chat.http.ReadTemplate;
+import org.example.groupbackend.chat.ai.ReadTemplate;
 import org.example.groupbackend.chat.sql.ExtractSQL;
 import org.example.groupbackend.chat.sql.SqlHandler;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package org.example.groupbackend.chat.http;
+package org.example.groupbackend.chat.ai;
 
 import org.example.groupbackend.request.RequestController;
 import org.slf4j.Logger;
