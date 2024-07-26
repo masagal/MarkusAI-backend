@@ -1,5 +1,7 @@
 package org.example.groupbackend.chat.http;
 
+import org.example.groupbackend.chat.ChatService;
+import org.example.groupbackend.chat.manager.AiManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,12 +11,12 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocket
 public class BrokerConfiguration implements WebSocketConfigurer {
-    private final JdbcTemplate jdbcTemplate;
     AiManager aiManager;
+    ChatService chatService;
 
-    public BrokerConfiguration(JdbcTemplate jdbcTemplate, AiManager aiManager) {
-        this.jdbcTemplate = jdbcTemplate;
+    public BrokerConfiguration(AiManager aiManager, ChatService chatService) {
         this.aiManager = aiManager;
+        this.chatService = chatService;
     }
 
     @Override
@@ -24,6 +26,6 @@ public class BrokerConfiguration implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler chatHandler() {
-        return new ChatSocketHandler(jdbcTemplate, aiManager);
+        return new ChatSocketHandler(aiManager, chatService);
     }
 }
