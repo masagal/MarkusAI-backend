@@ -33,7 +33,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         logger.info("Received message: {}", message.getPayload());
 
         try {
-            ChatMessage response = chatService.respondToUserMessage(new ChatMessage(message));
+            ChatMessage response = chatService.respondToUserMessage(new ChatMessage(message, ChatMessage.Role.USER));
             session.sendMessage(response.getTextMessage());
         } catch (Exception e) {
             // Log error and close session with server error status

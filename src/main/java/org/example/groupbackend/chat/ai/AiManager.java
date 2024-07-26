@@ -1,9 +1,9 @@
 package org.example.groupbackend.chat.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.example.groupbackend.chat.ChatMessage;
 
 import java.util.List;
 
 public interface AiManager {
-    String getNextResponse(List<JsonNode> conversationHistory) throws Exception;
+    ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception;
 }
