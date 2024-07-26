@@ -1,4 +1,4 @@
-package org.example.groupbackend.chat.manager;
+package org.example.groupbackend.chat.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

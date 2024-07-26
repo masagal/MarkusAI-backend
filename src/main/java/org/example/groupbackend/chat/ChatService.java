@@ -6,10 +6,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.http.ExtractSQL;
 import org.example.groupbackend.chat.http.ReadTemplate;
-import org.example.groupbackend.chat.manager.AiManager;
+import org.example.groupbackend.chat.ai.AiManager;
+import org.example.groupbackend.chat.sql.SqlHandler;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,12 @@ public class ChatService {
     private final JdbcTemplate jdbcTemplate;
     private final List<String> insertStatements = ReadTemplate.readTemplate();
     private final List<JsonNode> conversationHistory = new ArrayList<>();
+    private final SqlHandler sqlHandler;
 
-    public ChatService(AiManager aiManager, JdbcTemplate jdbcTemplate) {
+    public ChatService(AiManager aiManager, JdbcTemplate jdbcTemplate, SqlHandler sqlHandler) {
         this.aiManager = aiManager;
         this.jdbcTemplate = jdbcTemplate;
+        this.sqlHandler = sqlHandler;
     }
 
     public ChatMessage respondToUserMessage(ChatMessage chatMessage) throws Exception {
@@ -51,9 +53,7 @@ public class ChatService {
                 ExtractSQL sql = new ObjectMapper().readValue(response, ExtractSQL.class);
                 logger.info("Statement: {}", sql.sqlStatement());
                 //jdbcTemplate.execute(sql.sqlStatement());
-                quantity = this.jdbcTemplate.queryForObject(
-                        sql.sqlStatement(),
-                        String.class);
+                quantity = sqlHandler.queryForString(sql);
                 logger.info("Quantity that was found with jdbc: " + quantity);
                 if (quantity != null && Integer.parseInt(quantity) > 0) {
                     logger.info("Response should be replaced here" );
@@ -66,7 +66,7 @@ public class ChatService {
                 logger.info("We are in the if block to for making a new request");
                 ExtractSQL sql = new ObjectMapper().readValue(response, ExtractSQL.class);
                 logger.info("Statement: {}", sql.sqlStatement());
-                jdbcTemplate.execute(sql.sqlStatement());
+                sqlHandler.execute(sql);
                 response = "Check your request page to see if the request has been made!";
             }
 

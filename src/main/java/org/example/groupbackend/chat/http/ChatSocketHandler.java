@@ -4,19 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.ChatMessage;
 import org.example.groupbackend.chat.ChatService;
-import org.example.groupbackend.chat.manager.AiManager;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.example.groupbackend.chat.ai.AiManager;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class ChatSocketHandler extends TextWebSocketHandler {

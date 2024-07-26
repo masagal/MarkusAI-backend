@@ -1,10 +1,9 @@
 package org.example.groupbackend.chat.http;
 
 import org.example.groupbackend.chat.ChatService;
-import org.example.groupbackend.chat.manager.AiManager;
+import org.example.groupbackend.chat.ai.AiManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
