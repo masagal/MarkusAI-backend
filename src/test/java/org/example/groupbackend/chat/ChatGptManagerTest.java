@@ -19,8 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,19 +86,18 @@ public class ChatGptManagerTest {
 
     @Test
     @DirtiesContext
-    void shouldFormCorrectJson() throws Exception {
+    void shouldFormJsonWithMinimumFields() throws Exception {
         ArgumentCaptor<HttpEntity<String>> entityCaptor = ArgumentCaptor.captor();
 
         manager.getNextResponse(List.of(new ChatMessage("Hello", ChatMessage.Role.USER)));
 
         verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(String.class));
-
+        HttpEntity<String> entity = entityCaptor.getValue();
 
         String pathHasModel = "$.model";
         String pathHasMessagesOfNonZeroLength = "$.messages[0]";
         String messageHasRole = "$.messages[0].role";
         String messageHasContent = "$.messages[0].content";
-        HttpEntity<String> entity = entityCaptor.getValue();
 
         try {
             JsonPath.read(entity.getBody(), pathHasModel);
@@ -110,5 +108,33 @@ public class ChatGptManagerTest {
         } catch(PathNotFoundException ex) {
             fail("The json was incorrectly formed and was missing:" + ex.getMessage());
         }
+    }
+
+    @Test
+    void shouldFormJsonWithoutExtraFields() throws Exception {
+        String expectedOutput = """
+                {
+                    "model": "gpt-4o-mini",
+                    "messages": [
+                      {
+                        "role": "system",
+                        "content": "This is an automated test."
+                      },
+                      {
+                        "role": "user",
+                        "content": "Hello!"
+                      }
+                    ],
+                    max_tokens: 150
+                  }
+                """;
+        ArgumentCaptor<HttpEntity<String>> entityCaptor = ArgumentCaptor.captor();
+
+        manager.getNextResponse(List.of(new ChatMessage("Hello", ChatMessage.Role.USER)));
+
+        verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(String.class));
+        HttpEntity<String> entity = entityCaptor.getValue();
+
+        assertEquals(entity.getBody(), expectedOutput);
     }
 }
