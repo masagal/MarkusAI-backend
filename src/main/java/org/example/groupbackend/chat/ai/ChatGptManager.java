@@ -41,10 +41,6 @@ public class ChatGptManager implements AiManager {
         headers.setBearerAuth(apiKey);
     }
 
-    private String writeConversationHistory(List<ChatMessage> conversationHistory) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(conversationHistory);
-    }
-
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
         ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
