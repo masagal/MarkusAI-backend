@@ -27,11 +27,13 @@ public class ChatGptManager implements AiManager {
     @Value("${OPENAI_API_KEY}")
     private String apiKey;
     private final HttpHeaders headers = new HttpHeaders();
+    private final RestTemplate restTemplate;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
-    public ChatGptManager(@Qualifier("ChatGPT Instructions") ChatMessage systemMessage) {
+    public ChatGptManager(@Qualifier("ChatGPT Instructions") ChatMessage systemMessage, RestTemplate restTemplate) {
         this.systemMessage = systemMessage;
+        this.restTemplate = restTemplate;
 
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
@@ -42,8 +44,6 @@ public class ChatGptManager implements AiManager {
     }
 
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-
         ArrayList<JsonNode> processedConvoHistory = new ArrayList<>();
         processedConvoHistory.add(new ObjectMapper().createObjectNode().put("role", "system").put("content", systemMessage.content()));
         conversationHistory.forEach((message) -> {
