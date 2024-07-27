@@ -1,5 +1,6 @@
 package org.example.groupbackend.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.example.groupbackend.chat.ai.ChatGptManager;
@@ -114,27 +115,28 @@ public class ChatGptManagerTest {
     void shouldFormJsonWithoutExtraFields() throws Exception {
         String expectedOutput = """
                 {
-                    "model": "gpt-4o-mini",
-                    "messages": [
-                      {
-                        "role": "system",
-                        "content": "This is an automated test."
-                      },
-                      {
-                        "role": "user",
-                        "content": "Hello!"
-                      }
-                    ],
-                    max_tokens: 150
-                  }
+                    "model" : "gpt-4o-mini",
+                    "messages" : [ {
+                        "role" : "system",
+                        "content" : "This is an automated test."
+                    }, {
+                        "role" : "user",
+                        "content" : "Hello!"
+                    } ],
+                    "max_tokens" : 150
+                }
                 """;
         ArgumentCaptor<HttpEntity<String>> entityCaptor = ArgumentCaptor.captor();
 
-        manager.getNextResponse(List.of(new ChatMessage("Hello", ChatMessage.Role.USER)));
+        manager.getNextResponse(List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
 
         verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(String.class));
         HttpEntity<String> entity = entityCaptor.getValue();
 
-        assertEquals(entity.getBody(), expectedOutput);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Object expectedJsonObject = objectMapper.readValue(expectedOutput, Object.class);
+        Object actualJsonObject = objectMapper.readValue(entity.getBody(), Object.class);
+
+        assertEquals(expectedJsonObject, actualJsonObject);
     }
 }

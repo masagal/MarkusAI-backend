@@ -46,18 +46,11 @@ public class ChatGptManager implements AiManager {
     }
 
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
-        ArrayList<JsonNode> processedConvoHistory = new ArrayList<>();
-        processedConvoHistory.add(new ObjectMapper().createObjectNode().put("role", "system").put("content", systemMessage.content()));
-        conversationHistory.forEach((message) -> {
-            processedConvoHistory.add(new ObjectMapper().createObjectNode().put("role", message.role().name).put("content", message.content()));
-        });
+        ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage)));
+        messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
+        ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
 
-        String requestJson = "{" +
-                "\"model\":\"gpt-4\"," +
-                "\"messages\":" + writeConversationHistory(conversationHistory) + "," +
-                "\"max_tokens\":150" +
-                "}";
-        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
+        HttpEntity<String> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(dto), headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(API_URL, entity, String.class);
 
