@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.ChatMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -31,6 +32,7 @@ public class ChatGptManager implements AiManager {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
+    @Autowired
     public ChatGptManager(@Qualifier("ChatGPT Instructions") ChatMessage systemMessage, RestTemplate restTemplate) {
         this.systemMessage = systemMessage;
         this.restTemplate = restTemplate;
