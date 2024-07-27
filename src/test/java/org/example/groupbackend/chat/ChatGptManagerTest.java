@@ -139,4 +139,12 @@ public class ChatGptManagerTest {
 
         assertEquals(expectedJsonObject, actualJsonObject);
     }
+
+    @Test
+    void shouldReturnProperMessage() throws Exception {
+        ChatMessage response = manager.getNextResponse(List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
+
+        assertEquals("Hello! How can I assist you today?", response.content());
+        assertEquals("assistant", response.role().name);
+    }
 }
