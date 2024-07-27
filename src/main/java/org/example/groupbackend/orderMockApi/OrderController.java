@@ -1,6 +1,8 @@
 package org.example.groupbackend.orderMockApi;
 
 import jakarta.servlet.ServletRequest;
+import org.example.groupbackend.inventory.http.InventoryController;
+import org.example.groupbackend.inventory.http.dto.InventoryItemDto;
 import org.example.groupbackend.request.RequestApprovalDto;
 import org.example.groupbackend.request.RequestService;
 import org.example.groupbackend.user.User;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,7 +30,8 @@ public class OrderController {
         User user = (User) req.getAttribute("user");
         Order order = new Order(orderDto.status(), orderDto.approvedDate());
         Order createdOrder = orderService.createNewOrder(user, order, orderDto.requestId());
-        return ResponseEntity.ok(createdOrder);
+        URI location = URI.create(OrderController.ORDER_ENDPOINT + "/" + createdOrder.getId());
+        return ResponseEntity.created(location).body(createdOrder);
     }
 
     @GetMapping

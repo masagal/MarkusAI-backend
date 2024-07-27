@@ -61,4 +61,8 @@ public class Order {
     public void setRequest(Request request) {
         this.request = request;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
