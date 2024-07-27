@@ -47,26 +47,14 @@ public class ChatService {
     }
 
     public ChatMessage respondToUserMessage(ChatMessage userMessage) throws Exception {
-
-        // Add the user's message to the conversation history
-        logger.error("sending msg {}", userMessage.content());
         conversationHistory.add(userMessage);
-        logger.error("so convo history is now length {}", conversationHistory.size());
-
-        // Get response from ChatGPT API
         ChatMessage response = aiManager.getNextResponse(conversationHistory);
-
-        logger.error("got msg {}", response.content());
-        // Add the assistant's response to the conversation history
         conversationHistory.add(response);
-        logger.error("so convo history is now length {}", conversationHistory.size());
 
         logger.info("Response from gpt: " + response);
-        String quantity = "Problem finding quantity of the item";
         if (response.content().contains("sqlStatement") && response.content().contains("SELECT quantity FROM inventory_items")) {
             response = handleQuantity(response);
         }
-
         if (userMessage.content().contains("yes") && response.content().contains("INSERT INTO")) {
             response = makeRequest(response);
         }
