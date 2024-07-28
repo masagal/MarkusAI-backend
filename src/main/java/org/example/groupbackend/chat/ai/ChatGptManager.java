@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ChatGptManager implements AiManager {
@@ -42,18 +43,23 @@ public class ChatGptManager implements AiManager {
     }
 
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
         ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
 
-        HttpEntity<String> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(dto), headers);
+        HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(dto), headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(API_URL, entity, String.class);
+        ResponseEntity<ChatGptResponseDto> response = restTemplate.postForEntity(API_URL, entity, ChatGptResponseDto.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.getBody());
-            return new ChatMessage(root.path("choices").get(0).path("message").path("content").asText(), ChatMessage.Role.ASSISTANT);
+            List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();
+            if(choices.isEmpty()) {
+                throw new NoSuchElementException("ChatGPT returned zero responses.");
+            }
+            ChatGptResponseDto.ChoicesMessageDto message = choices.get(0).message();
+            return new ChatMessage(message.content(), ChatMessage.Role.ASSISTANT);
         } else {
             logger.error("Error response from OpenAI: {} - {}", response.getStatusCode(), response.getBody());
             throw new Exception("Error response from OpenAI API");

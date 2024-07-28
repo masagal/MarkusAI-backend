@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.example.groupbackend.chat.ai.ChatGptManager;
+import org.example.groupbackend.chat.ai.ChatGptResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,6 +42,16 @@ public class ChatGptManagerTest {
         when(systemMessage.content()).thenReturn("This is an automated test.");
         when(systemMessage.role()).thenReturn(ChatMessage.Role.SYSTEM);
 
+        ChatGptResponseDto responseDto = new ChatGptResponseDto("chatcmpl-9pXgtM6QSi9sPlrC6GA0g9hyg31b3",
+                "chat.completion",
+                "1722071263",
+                "gpt-4o-mini-2024-07-18",
+                List.of(new ChatGptResponseDto.ChoicesDto("0", new ChatGptResponseDto.ChoicesMessageDto("assistant", "Hello! How can I assist you today?"),
+                                                                null,
+                                                            "stop")),
+                new ChatGptResponseDto.UsageDataDto(19, 9, 28),
+                "fp_ba606877f9");
+
         String responseJson = """
                                 {
                                 "id": "chatcmpl-9pXgtM6QSi9sPlrC6GA0g9hyg31b3",
@@ -68,6 +79,9 @@ public class ChatGptManagerTest {
                 """;
         var responseEntity = new ResponseEntity<String>(responseJson, HttpStatus.OK);
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class))).thenReturn(responseEntity);
+
+        var responseDtoEntity = new ResponseEntity<ChatGptResponseDto>(responseDto, HttpStatus.OK);
+        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class))).thenReturn(responseDtoEntity);
     }
 
     @Test
@@ -82,7 +96,7 @@ public class ChatGptManagerTest {
         manager.getNextResponse(List.of(new ChatMessage("Hello", ChatMessage.Role.USER)));
 
         //Assert
-        verify(restTemplate).postForEntity(anyString(), any(HttpEntity.class), eq(String.class));
+        verify(restTemplate).postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class));
     }
 
     @Test
@@ -92,7 +106,7 @@ public class ChatGptManagerTest {
 
         manager.getNextResponse(List.of(new ChatMessage("Hello", ChatMessage.Role.USER)));
 
-        verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(String.class));
+        verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(ChatGptResponseDto.class));
         HttpEntity<String> entity = entityCaptor.getValue();
 
         String pathHasModel = "$.model";
@@ -130,7 +144,7 @@ public class ChatGptManagerTest {
 
         manager.getNextResponse(List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
 
-        verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(String.class));
+        verify(restTemplate).postForEntity(anyString(), entityCaptor.capture(), eq(ChatGptResponseDto.class));
         HttpEntity<String> entity = entityCaptor.getValue();
 
         ObjectMapper objectMapper = new ObjectMapper();
