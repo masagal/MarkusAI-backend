@@ -15,8 +15,11 @@ spring:
     jdbc:
       dialect: sql_server
   config:
-    import: optional:file:.env[.properties]
+    import: file:.env[.properties]
 clerk:
   api:
     url: ${CLERK_BACKEND_API_URL}
     key: ${CLERK_SECRET_KEY}
+openai:
+  api:
+    key: ${OPENAI_API_KEY}

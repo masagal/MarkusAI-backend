@@ -1,7 +1,5 @@
 package org.example.groupbackend.chat.ai;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +24,6 @@ public class ChatGptManager implements AiManager {
 
     ChatMessage systemMessage;
 
-    @Value("${OPENAI_API_KEY}")
     private String apiKey;
     private final HttpHeaders headers = new HttpHeaders();
     private final RestTemplate restTemplate;
@@ -34,7 +31,13 @@ public class ChatGptManager implements AiManager {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
     @Autowired
-    public ChatGptManager(@Qualifier("ChatGPT Instructions") ChatMessage systemMessage, RestTemplate restTemplate) {
+    public ChatGptManager(@Qualifier("ChatGPT Instructions") ChatMessage systemMessage, RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
+        if(apiKey == null) {
+            logger.error("OpenAI API key not found.");
+            logger.error("It should be set in application.yml.");
+            throw new IllegalStateException("OpenAI API key not found.");
+        }
+        this.apiKey = apiKey;
         this.systemMessage = systemMessage;
         this.restTemplate = restTemplate;
 
