@@ -33,9 +33,9 @@ public class ChatGptManagerTest {
     ChatMessage systemMessage;
     @Mock
     private RestTemplate restTemplate;
-    ChatGptManager manager;
+    private String apiKey = "sk-test-api-key";
 
-    String apiKey = "feck";
+    ChatGptManager manager;
 
     @BeforeEach
     void setup() {

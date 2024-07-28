@@ -1,6 +1,7 @@
 package org.example.groupbackend.request;
 
 import jakarta.servlet.ServletRequest;
+import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,17 +17,23 @@ import java.util.List;
 public class RequestController {
     public static final String REQUEST_ENDPOINT = "/requests";
 
+    private final ProductDbRepo productRepo;
     private final RequestService requestService;
 
-    public RequestController(RequestService requestService) {
+    public RequestController(RequestService requestService, ProductDbRepo productRepo) {
         this.requestService = requestService;
+        this.productRepo = productRepo;
     }
 
     @PostMapping
     public ResponseEntity<Request> postNewRequest(@RequestBody RequestListDto requestListDto, ServletRequest req) {
         User user = (User) req.getAttribute("user");
 
-        Request postRequest = requestService.newRequestWithProducts(user, requestListDto.requests());
+        Request postRequest = requestService.newRequestWithProducts(user,
+                requestListDto.requests().stream().map((dto) -> new RequestProduct(productRepo.findById(Long.valueOf(dto.productId())).orElseThrow(),
+                        dto.quantity(),
+                        null))
+                        .toList());
         return ResponseEntity.ok(postRequest);
     }
 
