@@ -21,6 +21,15 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         this.chatService = chatService;
     }
 
+    private final JdbcTemplate jdbcTemplate;
+
+    private final List<String> insertStatements = ReadTemplate.readTemplate();
+
+
+    public ChatSocketHandler(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     // Called after a WebSocket connection is established
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) {
@@ -31,6 +40,11 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         logger.info("Received message: {}", message.getPayload());
+
+        String holder = "Build one sql statement to update " +
+                "the quantity of the item in the message based on the template and put it in json " +
+                "format with key sqlStatement. If the item is not in the template only respond with " +
+                "'This item is not in the inventory'";
 
         try {
             ChatMessage response = chatService.respondToUserMessage(new ChatMessage(message, ChatMessage.Role.USER));
@@ -59,5 +73,4 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         // Clear the conversation history when the session is closed
         chatService.clearHistory();
     }
-
 }
