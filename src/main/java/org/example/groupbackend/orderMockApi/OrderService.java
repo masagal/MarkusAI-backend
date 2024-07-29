@@ -24,7 +24,7 @@ public class OrderService {
             throw new RequestService.NotAuthorizedException();
         }
         Request request = requestRepo.findById(requestId).orElseThrow();
-        order.setUser(user);
+        order.setApprovingAdminUser(user);
         order.setRequest(request);
         return orderRepo.save(order);
     }

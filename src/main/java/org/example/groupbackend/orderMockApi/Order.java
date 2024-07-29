@@ -15,7 +15,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user; //which admin user approved the order
+    private User approvingAdminUser; //which admin user approved the order
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -34,8 +34,8 @@ public class Order {
         this.approvedDate = approvedDate;
     }
 
-    public User getUser() {
-        return user;
+    public User getApprovingAdminUser() {
+        return approvingAdminUser;
     }
 
     public OrderStatus getStatus() {
@@ -54,8 +54,8 @@ public class Order {
         this.status = status;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setApprovingAdminUser(User user) {
+        this.approvingAdminUser = user;
     }
 
     public void setRequest(Request request) {

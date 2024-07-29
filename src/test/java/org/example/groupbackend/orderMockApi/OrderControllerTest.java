@@ -32,8 +32,6 @@ public class OrderControllerTest {
     @Autowired
     private OrderRepository orderRepository;
 
-    @MockBean
-    HttpServletRequest request;
 
     private final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzJqbTZBWVRoQ0RmUHFNbEh" +
             "CTzhqaHd5UExNSSIsIm5hbWUiOiJNYXRoIG1hdGgiLCJlbWFpbCI6Im1hdGhpLmFkbWluQGdtYWlsLmNvbS" +
@@ -51,7 +49,7 @@ public class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$.[0].user.email").value("mathi.admin@gmail.com"))
+                .andExpect(jsonPath("$.[0].approvingAdminUser.email").value("mathi.admin@gmail.com"))
                 .andExpect(jsonPath("$.[0].status").value("PENDING"))
                 .andExpect(jsonPath("$.[1].status").value("PENDING"))
                 .andExpect(jsonPath("$.[0].request.products", hasSize(1)))
@@ -111,11 +109,11 @@ public class OrderControllerTest {
                    }
                 """;
 
-        String fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzJqakl6R3E4UE82bW" +
+        String nonAdminToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzJqakl6R3E4UE82bW" +
                 "tSYUY4YVZhYnA0T1ZYUiIsIm5hbWUiOiJOb25BZG1pbiBtYXRoIiwiZW1haWwiOiJhbHdheXN0aGVyZUBn" +
                 "bWFpbC5jb20ifQ.q-_0qKSYUmobjy58TLu3yQ2ul2emzGWtSkb6u3PkoI8";
 
-        mockMvc.perform(patch(url).header(HttpHeaders.AUTHORIZATION, fakeToken).contentType(MediaType.APPLICATION_JSON).content(changeOrder))
+        mockMvc.perform(patch(url).header(HttpHeaders.AUTHORIZATION, nonAdminToken).contentType(MediaType.APPLICATION_JSON).content(changeOrder))
                 .andDo(print()) // print response details
                 .andExpect(status().isForbidden());
 
