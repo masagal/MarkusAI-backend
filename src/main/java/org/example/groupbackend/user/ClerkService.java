@@ -33,10 +33,10 @@ public class ClerkService {
         headers.set("Authorization", "Bearer " + clerkApiKey);
         headers.set("Content-Type", "application/json");
 
-        String username = userDto.getName().replaceAll("[^a-zA-Z0-9_-]", "_");
+        String username = userDto.name().replaceAll("[^a-zA-Z0-9_-]", "_");
 
         String requestBody = String.format("{\"first_name\":\"%s\", \"email_address\":[\"%s\"], \"username\":\"%s\", \"password\":\"%s\"}",
-                userDto.getName(), userDto.getEmail(), username, "secureRandomPassword");
+                userDto.name(), userDto.email(), username, "secureRandomPassword");
 
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
@@ -50,7 +50,7 @@ public class ClerkService {
                 String clerkId = root.path("id").asText();
                 String firstName = root.path("first_name").asText();
                 String email = root.path("email_addresses").get(0).path("email_address").asText();
-                boolean isAdmin = userDto.getIsAdmin();
+                boolean isAdmin = userDto.isAdmin();
 
                 return new UserClerkDto(clerkId, firstName, email, isAdmin);
             } else {

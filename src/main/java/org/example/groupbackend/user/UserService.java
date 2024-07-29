@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public UserDto saveUser(UserDto userDto) {
-        LOGGER.info("Creating user in Clerk: " + userDto.getEmail());
+        LOGGER.info("Creating user in Clerk: " + userDto.email());
 
         // Create user in Clerk
         UserClerkDto clerkUser = clerkService.createUser(userDto);
@@ -34,14 +34,14 @@ public class UserService {
         LOGGER.info("User saved in local database with ID: " + user.getId());
         LOGGER.info("User saved in local database with Clerk ID: " + user.getClerkId());
 
-        return toDto(user);
+        return UserDto.fromUser(user);
     }
 
     public List<UserDto> getAllUsers() {
         LOGGER.info("Fetching all users");
 
         List<UserDto> users = userRepository.findAll().stream()
-                .map(this::toDto)
+                .map(UserDto::fromUser)
                 .collect(Collectors.toList());
 
         LOGGER.info("Total users fetched: " + users.size());
@@ -71,7 +71,7 @@ public class UserService {
 
         User user = userRepository.findById(id).orElseThrow();
         LOGGER.info("user is"+ user);
-        UserDto userDto = toDto(user);
+        UserDto userDto = UserDto.fromUser(user);
 
         LOGGER.info("User fetched with ID: " + id);
 
@@ -87,12 +87,4 @@ public class UserService {
         return user;
     }
 
-    private UserDto toDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setIsAdmin(user.getIsAdmin());
-        return dto;
-    }
 }

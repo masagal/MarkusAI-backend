@@ -2,6 +2,9 @@ package org.example.groupbackend;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import org.example.groupbackend.user.ClerkService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +20,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class UserIntegrationTest {
 
+    ArrayList<String> createdUserIds = new ArrayList<>();
+
     @Autowired
     private WebApplicationContext context;
 
@@ -35,6 +42,12 @@ class UserIntegrationTest {
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    }
+
+    @AfterEach
+    void cleanup() {
+        var service = (ClerkService) context.getBean(ClerkService.class);
+        createdUserIds.forEach(service::deleteUser);
     }
 
     //fails because of secret not being exposed
@@ -53,12 +66,16 @@ class UserIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newUserRequestBody);
 
-        mockMvc.perform(post)
+        var result = mockMvc.perform(post)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.name", is("Test User " + uniqueId)))
                 .andExpect(jsonPath("$.email", is("testuser" + uniqueId + "@example.com")))
-                .andExpect(jsonPath("$.isAdmin", is(false)));
+                .andExpect(jsonPath("$.isAdmin", is(false)))
+                .andReturn();
+
+        String createdUserId = JsonPath.read(result.getResponse().getContentAsString(), "$.clerkId");
+        createdUserIds.add(createdUserId);
     }
 
     @Test
