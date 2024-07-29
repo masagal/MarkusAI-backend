@@ -2,6 +2,8 @@ package org.example.groupbackend.chat.ai;
 
 import org.example.groupbackend.chat.ChatMessage;
 import org.example.groupbackend.chat.PojoChatService;
+import org.example.groupbackend.inventory.model.InventoryItem;
+import org.example.groupbackend.inventory.service.InventoryService;
 import org.example.groupbackend.request.RequestListDto;
 import org.example.groupbackend.request.RequestProductDto;
 import org.example.groupbackend.request.RequestService;
@@ -33,6 +35,8 @@ public class ChatServiceIntegrationTest {
 
     @Autowired
     PojoChatService chatService;
+    @Autowired
+    InventoryService inventoryService;
 
     ChatGptResponseDto getDtoGivenMessage(String message) {
         ChatGptResponseDto.ChoicesMessageDto messageWithPojoDto = new ChatGptResponseDto.ChoicesMessageDto("assistant", message);
@@ -136,5 +140,30 @@ public class ChatServiceIntegrationTest {
         assertEquals(4, lastRequest.getProducts().get(0).getQuantity());
         assertNotNull(lastRequest.getProducts().get(0).getProduct());
         assertEquals(1, lastRequest.getProducts().get(0).getProduct().getId());
+    }
+
+    @Test
+    void shouldUpdateInventoryOnRequest() throws Exception {
+        String invUpdateRequestJson = """
+                {
+                  "messageToUser": "I see that you think we are out of blue markers. I will update this accordingly.",
+                  "inventoryUpdateRequest": {
+                    "product_id": 1, "newQuantity": 0
+                  }
+                }
+                """;
+        ChatGptResponseDto dto = getDtoGivenMessage(invUpdateRequestJson);
+
+        var responseDtoEntity = new ResponseEntity<>(dto, HttpStatus.OK);
+        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
+                .thenReturn(responseDtoEntity);
+
+        ChatMessage message = chatService.respondToUserMessage(new ChatMessage("Hey", ChatMessage.Role.USER));
+
+        InventoryItem item = inventoryService.getAll().stream()
+                .filter((i) -> i.getProduct().getId().equals(1L))
+                .findFirst().orElseThrow();
+
+        assertEquals(0, item.getQuantity());
     }
 }

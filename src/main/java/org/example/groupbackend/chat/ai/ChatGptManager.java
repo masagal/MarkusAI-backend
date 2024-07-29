@@ -89,7 +89,7 @@ public class ChatGptManager implements AiManager {
                 throw new NoSuchElementException("ChatGPT returned zero responses.");
             }
             ChatGptResponseDto.ChoicesMessageDto message = choices.get(0).message();
-            return new ChatResult(message.content(), null);
+            return new ChatResult(message.content(), null, null);
         } else {
             logger.error("Error response from OpenAI: {} - {}", response.getStatusCode(), response.getBody());
             throw new Exception("Error response from OpenAI API");

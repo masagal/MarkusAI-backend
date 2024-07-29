@@ -43,8 +43,11 @@ public class SystemMessageConfiguration {
                 The following office supplies are available:
                 """;
         msg += inventoryItems.stream().map((item) -> {
-                    logger.info("here's some stuff: {}", item.getLabel());
-                    return "Id:" + item.getId() + "Name:" + item.getLabel() + "Quantity in stock:" + item.getQuantity().toString();
+            logger.info("here's some stuff: {}", item.getLabel())   ;
+            return "Product id: " + item.getProduct().getId()
+                            + " Name: " + item.getLabel()
+                            + " Quantity in stock: " + item.getQuantity().toString()
+                            + " Location: "+item.getLocation();
                 })
                 .collect(Collectors.joining("\n"));
         msg += """
@@ -56,11 +59,17 @@ public class SystemMessageConfiguration {
                 please inform them that they are not authorized to request that item.
                 You are allowed to inform them about the other products that are in the inventory.
                 You are also allowed to suggest a product similar to what they are asking for. 
+                The user may report that inventory quantities differ. In this case, update the inventory quantity.
+                If the user says we are out of something, both update the inventory and make a request.
+                The quantity must not be negative.
+                Be a little skeptical, do not always trust the user immediately, but do not persist in refusing.
                 Your response should always be a JSON object in the following format:
                      {
                      "messageToUser": <submit text to be forwarded to the user>,
                      "request": <if a request should be made, on this format:>
-                            {"products": [{product_id: <product id>, quantity: <quantity>}]}
+                            {"products": [{product_id: <product id>, quantity: <quantity>}]},
+                     "inventoryUpdateRequest": <if the user states a different quantity in inventory>
+                            { "product_id": <product_id>, newQuantity: <new quantity> }
                      }
                 """;
         logger.info("System message reads: {}", msg);

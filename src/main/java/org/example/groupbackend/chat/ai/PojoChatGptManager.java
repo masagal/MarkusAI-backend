@@ -44,7 +44,7 @@ public class PojoChatGptManager extends ChatGptManager implements AiManager {
         } catch(Exception ex) {
             logger.error("Trying to parse a choice from Chat, but running into a JSON error. {}",
                     ex.getMessage());
-            return new ChatResult(json, Optional.empty());
+            return new ChatResult(json, Optional.empty(), Optional.empty());
         }
     }
 

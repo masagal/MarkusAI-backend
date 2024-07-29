@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.ai.ChatResult;
 import org.example.groupbackend.chat.ai.PojoChatGptManager;
 import org.example.groupbackend.chat.sql.SqlHandler;
+import org.example.groupbackend.inventory.model.InventoryItem;
+import org.example.groupbackend.inventory.service.InventoryService;
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.request.Request;
@@ -24,12 +26,14 @@ import java.util.NoSuchElementException;
 public class PojoChatService extends ChatService {
     Logger logger = LogManager.getLogger();
 
+    private final InventoryService inventoryService;
     private final ProductDbRepo productDbRepo;
     private final UserRepository userRepo;
     private final RequestRepository requestRepo;
 
-    public PojoChatService(PojoChatGptManager aiManager, SqlHandler sqlHandler, ProductDbRepo productDbRepo, UserRepository userRepo, RequestRepository requestRepo ) {
+    public PojoChatService(PojoChatGptManager aiManager, SqlHandler sqlHandler, InventoryService inventoryService, ProductDbRepo productDbRepo, UserRepository userRepo, RequestRepository requestRepo ) {
         super(aiManager, sqlHandler);
+        this.inventoryService = inventoryService;
         this.productDbRepo = productDbRepo;
         this.userRepo = userRepo;
         this.requestRepo = requestRepo;
@@ -42,9 +46,21 @@ public class PojoChatService extends ChatService {
         if(result.request().isPresent()) {
             processRequest(result.request().get());
         }
+        if(result.inventoryUpdateRequest().isPresent()) {
+            processInventoryUpdate(result.inventoryUpdateRequest().get());
+        }
         ChatMessage output = new ChatMessage(result.chatMessage(), ChatMessage.Role.ASSISTANT);
         conversationHistory.add(output);
         return output;
+    }
+
+    private void processInventoryUpdate(ChatResult.InventoryUpdateRequest request) {
+        InventoryItem item = inventoryService.getAll().stream().filter((i) ->
+                i.getProduct()
+                        .getId()
+                        .equals(Long.valueOf(request.productId())))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+        inventoryService.updateQuantity(item, request.newQuantity());
     }
 
     private void processRequest(ChatResult.ChatResultRequest request) {

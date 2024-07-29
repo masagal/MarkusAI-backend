@@ -168,7 +168,7 @@ class PojoChatGptManagerTest {
                 {
                   "messageToUser": "I see that you're requesting more orange whiteboard markers. However, since their current stock is zero, I will prepare a request for you.",
                   "request": {
-                    "products": [{"cid": 3, "quantity": 4}]
+                    "products": [{"product_id": 3, "quantity": 4}]
                   }
                 }
                 """;
@@ -185,6 +185,30 @@ class PojoChatGptManagerTest {
         assertEquals(4, result.request().get().getProducts().get(0).getQuantity());
         assertEquals(3, result.request().get().getProducts().get(0).getId());*/
     }
+
+    @Test
+    void shouldGetInventoryUpdateNullRequest() throws Exception {
+        String invUpdateRequestJson = """
+                {
+                  "messageToUser": "I see that you think we are out of blue markers. I will update this accordingly.",
+                  "inventoryUpdateRequest": {
+                    "product_id": 1, "newQuantity": 0
+                  }
+                }
+                """;
+        ChatGptResponseDto dto = getDtoGivenMessage(invUpdateRequestJson);
+
+        var responseDtoEntity = new ResponseEntity<>(dto, HttpStatus.OK);
+        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
+                .thenReturn(responseDtoEntity);
+
+        ChatResult result = manager.getChatCompletion(List.of(new ChatMessage("We are out of blue markers!", ChatMessage.Role.USER)));
+
+        assertTrue(result.inventoryUpdateRequest().isPresent());
+        assertEquals(0, result.inventoryUpdateRequest().get().newQuantity());
+        assertEquals(1, result.inventoryUpdateRequest().get().productId());
+    }
+
 
     @Test
     void shouldManageIfRequestIsntThere() throws Exception {
