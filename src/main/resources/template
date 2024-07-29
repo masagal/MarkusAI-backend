@@ -1,0 +1,70 @@
+Here are the schemas for the database:
+
+CREATE TABLE products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE inventory_items (
+    id CHAR(36) PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    quantity INT,
+    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN,
+    clerk_id VARCHAR(255)
+);
+
+CREATE TABLE requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT,
+    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE request_products (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id BIGINT,
+    quantity INT CHECK (quantity >= 0),
+    request_id BIGINT,
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (request_id) REFERENCES requests(id)
+);
+
+Here are examples of sql statements that you can build:
+SELECT quantity FROM inventory_items WHERE product_id=(SELECT id FROM products WHERE name='Blue whiteboard markers');
+INSERT INTO requests (user_id, is_approved) VALUES ('1', 'false');
+INSERT INTO request_products (product_id, quantity, request_id) VALUES ((SELECT id FROM products WHERE name='Blue whiteboard markers'), 5, (SELECT MAX(id) FROM requests));
+
+Here are the products in the database:
+Blue whiteboard markers
+Green whiteboard markers
+Orange whiteboard markers
+Red whiteboard markers
+Oatly litres
+Black whiteboard markers
+Yellow whiteboard markers
+Purple whiteboard markers
+Erasers
+Whiteboard cleaner
+
+
+Here are a list of instructions on what to do based on user message:
+1. If the user is asking for an item in the template use the sql statements examples in the template to respond with
+only one SELECT sql statement to find the quantity of that item. You are not allowed to make any INSERT statements until the user says yes.
+Store the sql statement in json format with the key sqlStatement in double quotes and no escape/back slashes.
+
+2. If the user says yes when asked previously 'Do you want to make a request?', and the user has not provided the quantity they need,
+then ask how many items they need before making any sql statements.
+
+3. If the user says yes when asked previously 'Do you want to make a request?', and the user has provided the quantity they need,
+then use the sql statements examples in the template to make one insert sql statement for making a new request with user id=1 and is_approved=false in single quotes
+and one insert sql statement to make a new request product with the values product_id of the item, quantity the user wants,
+and the max request_id number and put these in one line in json format with the key sqlStatement in double quotes.
+
+

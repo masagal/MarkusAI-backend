@@ -20,3 +20,6 @@ clerk:
   api:
     url: ${CLERK_BACKEND_API_URL}
     key: ${CLERK_SECRET_KEY}
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
