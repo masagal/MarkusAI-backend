@@ -21,13 +21,8 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         this.chatService = chatService;
     }
 
-    private final JdbcTemplate jdbcTemplate;
+    public ChatSocketHandler() {
 
-    private final List<String> insertStatements = ReadTemplate.readTemplate();
-
-
-    public ChatSocketHandler(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     // Called after a WebSocket connection is established
