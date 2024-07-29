@@ -1,5 +1,8 @@
 package org.example.groupbackend.request;
 
+import org.example.groupbackend.orderMockApi.Order;
+import org.example.groupbackend.orderMockApi.OrderService;
+import org.example.groupbackend.orderMockApi.OrderStatus;
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.user.User;
@@ -8,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -16,12 +20,12 @@ public class RequestService {
 
     private final RequestRepository requestRepo;
     private final ProductDbRepo productDbRepo;
-    private final UserRepository userRepo;
+    private final OrderService orderService;
 
-    public RequestService(RequestRepository requestRepo, ProductDbRepo productDbRepo, UserRepository userRepo) {
+    public RequestService(RequestRepository requestRepo, ProductDbRepo productDbRepo, OrderService orderService) {
         this.requestRepo = requestRepo;
         this.productDbRepo = productDbRepo;
-        this.userRepo = userRepo;
+        this.orderService = orderService;
     }
 
     public Request createNewRequest(User user) {
@@ -59,6 +63,10 @@ public class RequestService {
         }
         Request request = requestRepo.findById(requestId).orElseThrow(NoSuchElementException::new);
         request.setApproved(approve);
+        if (approve) {
+            Order newOrder = new Order(OrderStatus.PENDING, LocalDateTime.now());
+            orderService.createNewOrder(user, newOrder, requestId);
+        }
         requestRepo.save(request);
     }
 
