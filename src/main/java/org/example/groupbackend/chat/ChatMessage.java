@@ -14,6 +14,9 @@ public record ChatMessage(String content, Role role) {
         }
     }
 
+    public ChatMessage(String message) {
+        this(message, Role.ASSISTANT);
+    }
     public ChatMessage(TextMessage message, ChatMessage.Role role) {
         this(message.getPayload(), role);
     }

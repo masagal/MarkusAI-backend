@@ -19,7 +19,7 @@ public class Request {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "request", cascade ={ CascadeType.MERGE, CascadeType.REMOVE })
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RequestProduct> products;
 
     private boolean isApproved;

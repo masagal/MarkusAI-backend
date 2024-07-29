@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.example.groupbackend.chat.ai.ChatGptManager;
 import org.example.groupbackend.chat.ai.ChatGptResponseDto;
+import org.example.groupbackend.chat.ai.dto.ChoicesMessageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

@@ -15,8 +15,8 @@ import java.util.List;
 @Service
 public class ChatService {
     private final Logger logger = LogManager.getLogger();
-    private final AiManager aiManager;
-    private final List<ChatMessage> conversationHistory = new ArrayList<>();
+    final AiManager aiManager;
+    protected final List<ChatMessage> conversationHistory = new ArrayList<>();
     private final SqlHandler sqlHandler;
 
     public ChatService(AiManager aiManager, SqlHandler sqlHandler) {
