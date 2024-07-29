@@ -46,7 +46,7 @@ class UserIntegrationTest {
 
     @AfterEach
     void cleanup() {
-        var service = (ClerkService) context.getBean("ClerkService");
+        var service = (ClerkService) context.getBean(ClerkService.class);
         createdUserIds.forEach(service::deleteUser);
     }
 
