@@ -33,12 +33,14 @@ public class ChatGptManagerTest {
     ChatMessage systemMessage;
     @Mock
     private RestTemplate restTemplate;
-
-    @InjectMocks
     ChatGptManager manager;
+
+    String apiKey = "feck";
 
     @BeforeEach
     void setup() {
+        manager = new ChatGptManager(systemMessage, restTemplate, apiKey);
+
         when(systemMessage.content()).thenReturn("This is an automated test.");
         when(systemMessage.role()).thenReturn(ChatMessage.Role.SYSTEM);
 
