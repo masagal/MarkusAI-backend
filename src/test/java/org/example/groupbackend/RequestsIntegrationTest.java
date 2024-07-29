@@ -1,7 +1,7 @@
 package org.example.groupbackend;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.annotation.Before;
+import org.example.groupbackend.orderMockApi.OrderService;
 import org.example.groupbackend.products.Product;
 import org.example.groupbackend.products.ProductDbRepo;
 import org.example.groupbackend.request.*;
@@ -9,37 +9,22 @@ import org.example.groupbackend.user.User;
 import org.example.groupbackend.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -55,6 +40,8 @@ public class RequestsIntegrationTest {
     RequestRepository requestRepo;
     @MockBean
     ProductDbRepo productRepo;
+    @MockBean
+    OrderService orderService;
     @MockBean
     HttpServletRequest request;
 
