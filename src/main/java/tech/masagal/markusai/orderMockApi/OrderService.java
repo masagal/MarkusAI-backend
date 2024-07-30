@@ -1,6 +1,10 @@
 package tech.masagal.markusai.orderMockApi;
 
+import tech.masagal.markusai.inventory.model.InventoryDbRepo;
+import tech.masagal.markusai.inventory.model.InventoryItem;
+import tech.masagal.markusai.inventory.service.InventoryService;
 import tech.masagal.markusai.request.Request;
+import tech.masagal.markusai.request.RequestProduct;
 import tech.masagal.markusai.request.RequestRepository;
 import tech.masagal.markusai.request.RequestService;
 import tech.masagal.markusai.user.User;
@@ -13,10 +17,12 @@ import java.util.NoSuchElementException;
 public class OrderService {
     private final OrderRepository orderRepo;
     private final RequestRepository requestRepo;
+    private final InventoryDbRepo inventoryDbRepo;
 
-    public OrderService(OrderRepository orderRepo, RequestRepository requestRepo) {
+    public OrderService(OrderRepository orderRepo, RequestRepository requestRepo, InventoryDbRepo inventoryDbRepo) {
         this.orderRepo = orderRepo;
         this.requestRepo = requestRepo;
+        this.inventoryDbRepo = inventoryDbRepo;
     }
 
     public Order createNewOrder(User user, Order order, Long requestId) {
@@ -39,6 +45,17 @@ public class OrderService {
         }
         Order order = orderRepo.findById(orderId).orElseThrow(NoSuchElementException::new);
         order.setStatus(orderStatus);
+        if (orderStatus.equals(OrderStatus.ARRIVED)) {
+            updateInventoryWhenOrderArrived(order.getRequest().getProducts());
+        }
         orderRepo.save(order);
+    }
+
+    private void updateInventoryWhenOrderArrived(List<RequestProduct> requestProducts) {
+        requestProducts.forEach(requestProduct -> {
+            InventoryItem item = inventoryDbRepo.findByProduct(requestProduct.getProduct());
+            item.setQuantity(item.getQuantity() + requestProduct.getQuantity());
+            inventoryDbRepo.save(item);
+        });
     }
 }
