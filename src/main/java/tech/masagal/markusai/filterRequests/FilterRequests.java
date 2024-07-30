@@ -54,7 +54,7 @@ public class FilterRequests extends OncePerRequestFilter {
                     "Killing the request and returning 400.");
             return;
         }
-
+        logger.info("user filter completed, inserting user data into attribute");
         request.setAttribute("user", user);
 
         filterChain.doFilter(request, response);
@@ -63,6 +63,6 @@ public class FilterRequests extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return "/api/users".equals(path) || path.contains("h2-console") || path.contains("/chat");
+        return "/api/users".equals(path) || path.contains("h2-console") || path.contains("chat");
     }
 }
