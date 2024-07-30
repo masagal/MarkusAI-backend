@@ -56,10 +56,10 @@ public class ChatGptManager implements AiManager {
 
         ChatMessage systemMessage = context.getBean(ChatMessage.class);
         User user = context.getBean("user", User.class);
-        ChatMessage systemMessage2 = new ChatMessage("You are talking to: " + user.getName(), ChatMessage.Role.SYSTEM);
+        ChatMessage systemMessage2 = new ChatMessage(systemMessage.content() + "\nYou are talking to: " + user.getName(), ChatMessage.Role.SYSTEM);
         logger.info("telling chat they are talking to " + user.getName());
 
-        ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage), new ChatGptMessageDto(systemMessage2)));
+        ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage2)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
         ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(dto), headers);

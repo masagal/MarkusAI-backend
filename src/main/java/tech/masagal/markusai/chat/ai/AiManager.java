@@ -1,6 +1,7 @@
 package tech.masagal.markusai.chat.ai;
 
 import tech.masagal.markusai.chat.ChatMessage;
+import tech.masagal.markusai.user.User;
 
 import java.util.List;
 

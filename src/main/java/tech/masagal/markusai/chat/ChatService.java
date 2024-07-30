@@ -8,6 +8,7 @@ import tech.masagal.markusai.chat.ai.AiManager;
 import tech.masagal.markusai.chat.sql.ExtractSQL;
 import tech.masagal.markusai.chat.sql.SqlHandler;
 import org.springframework.stereotype.Service;
+import tech.masagal.markusai.user.User;
 
 import java.util.ArrayList;
 import java.util.List;

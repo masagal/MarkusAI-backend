@@ -65,7 +65,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
                 return;
             } catch (Exception ex) {
                 logger.error("Failed to map user data. This is a problem.");
-                throw new IllegalStateException("failed to map user data");
+                throw new IllegalStateException("failed to map user data" + ex.getMessage());
             }
         }
         User user = (User) session.getAttributes().get("user");
@@ -98,6 +98,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         logger.info("WebSocket connection closed: {} with status: {}", session.getId(), status);
+        context.getBeanFactory().destroyBean(context.getBean("user", User.class));
         // Clear the conversation history when the session is closed
         chatService.clearHistory();
     }
