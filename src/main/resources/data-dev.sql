@@ -5,13 +5,21 @@ INSERT INTO products (id, name) VALUES (default, 'Blue whiteboard markers'),
                                         (default, 'Green whiteboard markers'),
                                         (default, 'Orange whiteboard markers'),
                                         (default, 'Red whiteboard markers'),
-                                        (default, 'Oatly litres');
+                                        (default, 'Oatly litres'),
+                                        (default, 'Low-fat milk'),
+                                        (default, 'SaltBot MacBook Air'),
+                                        (default, 'Split-palm mechanical keyboard'),
+                                        (default, 'Split-palm mechanical keyboard');
 
 INSERT INTO inventory_items (id, product_id, quantity, location) VALUES ('1', 1, 4, 'supply closet'),
                                                          ('2', 2, 6, 'supply closet'),
                                                          ('3', 3, 6, 'meeting room oregano'),
                                                          ('4', 4, 6, 'meeting room pepper'),
-                                                         ('5', 5, 5, 'core team fridge');
+                                                         ('5', 5, 5, 'core team fridge'),
+                                                         ('6', 6, 0, 'developer fridge'),
+                                                         ('7', 7, 1, 'alek put it somewhere'),
+                                                         ('8', 8, 1, 'markus has one'),
+                                                         ('9', 9, 1, 'in the JFS room');
 
 INSERT INTO users (email, name, is_admin) VALUES ('test@test.no','testUser', false);
 INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('admin@tolpuddle.tech', 'simon admin', true, 'user_2jbOj40LQGG8Y8RhHMgGO763eRq');

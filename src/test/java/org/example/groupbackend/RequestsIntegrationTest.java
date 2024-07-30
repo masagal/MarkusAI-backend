@@ -23,8 +23,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -53,18 +53,20 @@ public class RequestsIntegrationTest {
     RequestService service;
 
     RequestProduct requestProduct = Mockito.mock(RequestProduct.class);
+    RequestProductDto requestProductDto = Mockito.mock(RequestProductDto.class);
 
     @BeforeEach
     void setup() {
-        Mockito.when(user.getIsAdmin()).thenReturn(false);
+        when(user.getIsAdmin()).thenReturn(false);
 
         Product product = Mockito.mock(Product.class);
-        Mockito.when(requestProduct.getProduct()).thenReturn(product);
-        Mockito.when(product.getName()).thenReturn("Stinker's Snake Oil");
-        Mockito.when(productRepo.findAll()).thenReturn(List.of(product));
-        Mockito.when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
-        Mockito.when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
-        Mockito.when(request.getAttribute("user")).thenReturn(user);
+        when(requestProduct.getProduct()).thenReturn(product);
+        when(product.getName()).thenReturn("Stinker's Snake Oil");
+        when(productRepo.findAll()).thenReturn(List.of(product));
+        when(productRepo.findById(1L)).thenReturn(Optional.of(product));
+        when(productRepo.getByName(anyString())).thenReturn(Optional.of(product));
+        when(requestRepo.save(any())).thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+        when(request.getAttribute("user")).thenReturn(user);
     }
 
     @Nested
@@ -72,8 +74,8 @@ public class RequestsIntegrationTest {
 
         @Test
         public void canCreateNewRequest() throws Exception {
-
-            RequestListDto dto = new RequestListDto(List.of(requestProduct), 1L);
+            when(requestProductDto.productId()).thenReturn("1");
+            RequestListDto dto = new RequestListDto(List.of(requestProductDto), 1L);
 
             var response = controller.postNewRequest(dto, request);
 
@@ -91,7 +93,7 @@ public class RequestsIntegrationTest {
         public void cannotApproveRequest() {
             Request rRequest = new Request(user);
             rRequest.setProducts(List.of(requestProduct));
-            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
+            when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
 
             RequestApprovalDto dto = new RequestApprovalDto(rRequest.getId(), true);
 
@@ -105,7 +107,7 @@ public class RequestsIntegrationTest {
 
         @BeforeEach
         void setup() {
-            Mockito.when(user.getIsAdmin()).thenReturn(true);
+            when(user.getIsAdmin()).thenReturn(true);
         }
 
         @Test
@@ -127,7 +129,7 @@ public class RequestsIntegrationTest {
         public void canApproveRequest() {
             Request rRequest = new Request(user);
             rRequest.setProducts(List.of(requestProduct));
-            Mockito.when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
+            when(requestRepo.findById(any())).thenReturn(Optional.of(rRequest));
 
             RequestApprovalDto dto = new RequestApprovalDto(rRequest.getId(), true);
 

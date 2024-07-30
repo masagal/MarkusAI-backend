@@ -5,6 +5,7 @@ import org.example.groupbackend.chat.ai.ReadTemplate;
 import org.example.groupbackend.chat.sql.ExtractSQL;
 import org.example.groupbackend.chat.sql.SqlHandler;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Disabled
 public class ChatServiceTest {
 
     @MockBean

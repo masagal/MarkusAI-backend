@@ -30,3 +30,7 @@ logging:
       springframework:
         boot:
           autoconfigure: ERROR
+
+openai:
+  api:
+    key: sk-MOCK-API-KEY-FOR-TESTING

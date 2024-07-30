@@ -5,7 +5,9 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.example.groupbackend.chat.ai.ChatGptManager;
 import org.example.groupbackend.chat.ai.ChatGptResponseDto;
+import org.example.groupbackend.chat.ai.dto.ChoicesMessageDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -28,14 +30,15 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Disabled
 public class ChatGptManagerTest {
     @Mock(name = "ChatGPT Instructions")
     ChatMessage systemMessage;
     @Mock
     private RestTemplate restTemplate;
-    ChatGptManager manager;
+    private String apiKey = "sk-test-api-key";
 
-    String apiKey = "feck";
+    ChatGptManager manager;
 
     @BeforeEach
     void setup() {

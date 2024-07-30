@@ -23,6 +23,10 @@ public class RequestProduct {
     @JoinColumn(name = "request_id")
     private Request request;
 
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
     public RequestProduct() {
     }
 
@@ -30,6 +34,11 @@ public class RequestProduct {
         this.product = product;
         this.quantity = quantity;
         this.request = request;
+    }
+
+    public RequestProduct(Product p, Integer quantity) {
+        this.product = p;
+        this.quantity = quantity;
     }
 
     public Product getProduct() {

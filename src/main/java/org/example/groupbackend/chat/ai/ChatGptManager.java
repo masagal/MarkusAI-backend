@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.groupbackend.chat.ChatMessage;
+import org.example.groupbackend.chat.ai.dto.ChoicesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,6 +23,9 @@ import java.util.NoSuchElementException;
 @Service
 public class ChatGptManager implements AiManager {
     Logger logger = LogManager.getLogger();
+
+    @Autowired
+    ApplicationContext context;
 
     ChatMessage systemMessage;
 
@@ -45,16 +50,21 @@ public class ChatGptManager implements AiManager {
         headers.setBearerAuth(apiKey);
     }
 
-    public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
+    ResponseEntity<ChatGptResponseDto> getResponse(List<ChatMessage> conversationHistory) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
+
+        ChatMessage systemMessage = context.getBean(ChatMessage.class);
 
         ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
         ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
-
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(dto), headers);
 
-        ResponseEntity<ChatGptResponseDto> response = restTemplate.postForEntity(API_URL, entity, ChatGptResponseDto.class);
+        return restTemplate.postForEntity(API_URL, entity, ChatGptResponseDto.class);
+    }
+
+    public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
+        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();
@@ -63,6 +73,23 @@ public class ChatGptManager implements AiManager {
             }
             ChatGptResponseDto.ChoicesMessageDto message = choices.get(0).message();
             return new ChatMessage(message.content(), ChatMessage.Role.ASSISTANT);
+        } else {
+            logger.error("Error response from OpenAI: {} - {}", response.getStatusCode(), response.getBody());
+            throw new Exception("Error response from OpenAI API");
+        }
+    }
+
+    @Override
+    public ChatResult getChatCompletion(List<ChatMessage> conversationHistory) throws Exception {
+        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();
+            if(choices.isEmpty()) {
+                throw new NoSuchElementException("ChatGPT returned zero responses.");
+            }
+            ChatGptResponseDto.ChoicesMessageDto message = choices.get(0).message();
+            return new ChatResult(message.content(), null, null);
         } else {
             logger.error("Error response from OpenAI: {} - {}", response.getStatusCode(), response.getBody());
             throw new Exception("Error response from OpenAI API");
