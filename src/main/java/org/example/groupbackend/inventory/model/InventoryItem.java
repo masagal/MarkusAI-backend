@@ -20,6 +20,8 @@ public class InventoryItem {
 
     Integer quantity;
 
+    String location;
+
     protected InventoryItem() {
         logger.warn("Empty inventory item created.");
     }
@@ -56,5 +58,13 @@ public class InventoryItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,6 +80,14 @@ class InventoryIntegrationTest {
                 .andExpect(header().exists("location"))
                 .andExpect(jsonPath("$.id", not(is(empty()))));
 
+    }
+
+    @Test
+    public void shouldKnowLocation() throws Exception {
+        var get = MockMvcRequestBuilders.get(InventoryController.ENDPOINT);
+
+        mockMvc.perform(get)
+                .andExpect(jsonPath("$.[0].location", not(is(empty()))));
     }
 
     @Test

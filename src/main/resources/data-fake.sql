@@ -13,17 +13,17 @@ VALUES ('Blue whiteboard markers'),
        ('Sticky notes');
 
 -- Insert inventory items
-INSERT INTO inventory_items (id, product_id, quantity)
-VALUES ('1', 1, 4),
-       ('2', 2, 6),
-       ('3', 3, 6),
-       ('4', 4, 6),
-       ('5', 5, 5),
-       ('6', 6, 8),
-       ('7', 7, 7),
-       ('8', 8, 10),
-       ('9', 9, 15),
-       ('10', 10, 12);
+INSERT INTO inventory_items (id, product_id, quantity, location)
+VALUES ('1', 1, 4, 'supply closet'),
+       ('2', 2, 6, 'supply closet'),
+       ('3', 3, 6, 'supply closet'),
+       ('4', 4, 6, 'supply closet'),
+       ('5', 5, 5, 'developer fridge'),
+       ('6', 6, 8, 'alek has it'),
+       ('7', 7, 7, 'markus took it'),
+       ('8', 8, 10, 'conference room oregano'),
+       ('9', 9, 15, 'conference room oregano'),
+       ('10', 10, 12, 'conference room pepper');
 
 -- Insert users
 INSERT INTO users (email, name, is_admin, clerk_id)

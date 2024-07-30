@@ -7,11 +7,11 @@ INSERT INTO products (id, name) VALUES (default, 'Blue whiteboard markers'),
                                         (default, 'Red whiteboard markers'),
                                         (default, 'Oatly litres');
 
-INSERT INTO inventory_items (id, product_id, quantity) VALUES ('1', 1, 4),
-                                                         ('2', 2, 6),
-                                                         ('3', 3, 6),
-                                                         ('4', 4, 6),
-                                                         ('5', 5, 5);
+INSERT INTO inventory_items (id, product_id, quantity, location) VALUES ('1', 1, 4, 'supply closet'),
+                                                         ('2', 2, 6, 'supply closet'),
+                                                         ('3', 3, 6, 'meeting room oregano'),
+                                                         ('4', 4, 6, 'meeting room pepper'),
+                                                         ('5', 5, 5, 'core team fridge');
 
 INSERT INTO users (email, name, is_admin) VALUES ('test@test.no','testUser', false);
 INSERT INTO users (email, name, is_admin, clerk_id) VALUES ('admin@tolpuddle.tech', 'simon admin', true, 'user_2jbOj40LQGG8Y8RhHMgGO763eRq');
