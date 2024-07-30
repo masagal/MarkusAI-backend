@@ -64,6 +64,10 @@ public class InventoryItem {
         return location;
     }
 
+    public String getImageUrl() {
+        return product.getImageUrl();
+    }
+
     public void setLocation(String location) {
         this.location = location;
     }
