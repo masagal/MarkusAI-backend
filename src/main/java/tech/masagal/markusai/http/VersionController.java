@@ -13,6 +13,6 @@ public class VersionController {
 
     @GetMapping
     public ResponseEntity<String> getVersion() {
-        return ResponseEntity.ok("0.0.1");
+        return ResponseEntity.ok("0.0.2");
     }
 }
