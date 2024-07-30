@@ -2,7 +2,7 @@ server:
   port: 9999
 spring:
   application:
-    name: Masagal-backend
+    name: MarkusAI Backend
 
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;IGNORECASE=TRUE;

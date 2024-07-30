@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Masagal-backend
+    name: MarkusAI Backend
 
   datasource:
     url: jdbc:h2:mem:mydb

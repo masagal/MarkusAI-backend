@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Masagal-backend
+    name: MarkusAI Backend
   jpa:
     hibernate:
        ddl-auto: update
