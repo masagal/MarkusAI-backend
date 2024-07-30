@@ -41,7 +41,7 @@ INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('mathi.ad
 INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('alwaysthere@gmail.com', 'NonAdmin math', false, 'user_2jjIzGq8PO6mkRaF8aVabp4OVXR', 'https://www.gulflive.com/resizer/qP4Km5tGSOFi-Fr05NSxZSirjAs=/1280x0/smart/advancelocal-adapter-image-uploads.s3.amazonaws.com/image.gulflive.com/home/gulf-media/width2048/img/mississippi-press-entertainment/photo/s5x032-0877-9jpg-81525108288c26be.jpg');
 
 INSERT INTO requests (user_id, is_approved) VALUES (1, false);
-INSERT INTO requests (user_id, is_approved) VALUES (1, false);
+INSERT INTO requests (user_id, is_approved) VALUES (1, true);
 INSERT INTO requests (user_id, is_approved) VALUES (3, false);
 INSERT INTO requests (user_id, is_approved) VALUES (3, true);
 INSERT INTO request_products (product_id, request_id, quantity) VALUES (1, 1, 10);
