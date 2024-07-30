@@ -18,6 +18,8 @@ public class User {
 
     private String clerkId;
 
+    private String imageUrl;
+
     public Long getId() {
         return id;
     }
@@ -56,5 +58,9 @@ public class User {
 
     public String getClerkId() {
         return clerkId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }
