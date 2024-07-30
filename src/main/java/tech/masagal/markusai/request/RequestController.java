@@ -1,6 +1,8 @@
 package tech.masagal.markusai.request;
 
 import jakarta.servlet.ServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tech.masagal.markusai.products.ProductDbRepo;
 import tech.masagal.markusai.user.User;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequestMapping(RequestController.REQUEST_ENDPOINT)
 @CrossOrigin
 public class RequestController {
+    Logger logger = LogManager.getLogger();
     public static final String REQUEST_ENDPOINT = "/requests";
 
     private final ProductDbRepo productRepo;
@@ -52,12 +55,12 @@ public class RequestController {
     @PatchMapping
     public ResponseEntity<Void> approveRequest(@RequestBody RequestApprovalDto requestApprovalDto, ServletRequest req) {
         User user = (User) req.getAttribute("user");
-
         try {
             requestService.approveRequest(user, requestApprovalDto.requestId(), requestApprovalDto.approve());
         } catch(RequestService.NotAuthorizedException ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        logger.info("approved request {} with approval {}", requestApprovalDto.requestId(), requestApprovalDto.approve());
         return ResponseEntity.ok().build();
     }
 
