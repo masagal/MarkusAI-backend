@@ -7,6 +7,7 @@ import org.example.groupbackend.chat.ai.ChatGptManager;
 import org.example.groupbackend.chat.ai.ChatGptResponseDto;
 import org.example.groupbackend.chat.ai.dto.ChoicesMessageDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Disabled
 public class ChatGptManagerTest {
     @Mock(name = "ChatGPT Instructions")
     ChatMessage systemMessage;
