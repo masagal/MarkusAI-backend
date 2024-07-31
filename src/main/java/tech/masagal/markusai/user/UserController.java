@@ -25,6 +25,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto, ServletRequest req) {
         User commissioner = (User) req.getAttribute("user");
+        if(!commissioner.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
         User newUser = userDto.toUser();
 
         UserDto savedUser = UserDto.fromUser(userService.saveUser(commissioner, newUser));
@@ -49,7 +52,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers(ServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        if(!user.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
+
         List<UserDto> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -61,7 +69,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, ServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        if(!user.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
+
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
