@@ -21,8 +21,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
-        UserDto savedUser = userService.saveUser(userDto);
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto, ServletRequest req) {
+        User commissioner = (User) req.getAttribute("user");
+        User newUser = userDto.toUser();
+
+        UserDto savedUser = UserDto.fromUser(userService.saveUser(commissioner, newUser));
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 

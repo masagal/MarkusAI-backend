@@ -21,20 +21,14 @@ public class UserService {
         this.clerkService = clerkService;
     }
 
-    public UserDto saveUser(UserDto userDto) {
-        LOGGER.info("Creating user in Clerk: " + userDto.email());
+    public User saveUser(User commissioner, User newUser) {
+        LOGGER.info("Commissioner creating new user" + commissioner.getEmail() + " " + newUser.getEmail());
 
-        // Create user in Clerk
-        UserClerkDto clerkUser = clerkService.createUser(userDto);
+        userRepository.save(newUser);
 
-        // Save user in local database
-        User user = toEntity(clerkUser);
-        userRepository.save(user);
+        LOGGER.info("User saved in local database with ID: " + newUser.getId());
 
-        LOGGER.info("User saved in local database with ID: " + user.getId());
-        LOGGER.info("User saved in local database with Clerk ID: " + user.getClerkId());
-
-        return UserDto.fromUser(user);
+        return newUser;
     }
 
     public List<UserDto> getAllUsers() {
@@ -76,15 +70,6 @@ public class UserService {
         LOGGER.info("User fetched with ID: " + id);
 
         return userDto;
-    }
-
-    private User toEntity(UserClerkDto userClerkDto) {
-        User user = new User();
-        user.setClerkId(userClerkDto.clerkId());
-        user.setName(userClerkDto.name());
-        user.setEmail(userClerkDto.email());
-        user.setIsAdmin(userClerkDto.isAdmin());
-        return user;
     }
 
 }
