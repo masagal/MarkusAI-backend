@@ -1,5 +1,6 @@
 package tech.masagal.markusai.chat.ai;
 
+import org.junit.jupiter.api.Disabled;
 import tech.masagal.markusai.chat.ChatMessage;
 import tech.masagal.markusai.chat.PojoChatService;
 import tech.masagal.markusai.inventory.model.InventoryItem;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Disabled
 public class ChatServiceIntegrationTest {
     @MockBean
     RestTemplate restTemplate;

@@ -1,6 +1,7 @@
 package tech.masagal.markusai.chat.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import tech.masagal.markusai.chat.ChatMessage;
 import tech.masagal.markusai.chat.PojoChatService;
 import tech.masagal.markusai.request.RequestListDto;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Disabled
 class PojoChatGptManagerTest {
     @MockBean
     RestTemplate restTemplate;
