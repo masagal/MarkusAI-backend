@@ -1,0 +1,15 @@
+package tech.masagal.markusai;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@ActiveProfiles("test")
+@SpringBootTest
+class MarkusAIBackendTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
