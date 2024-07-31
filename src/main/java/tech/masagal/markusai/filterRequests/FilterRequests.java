@@ -14,15 +14,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Set;
 
 @Component
 public class FilterRequests extends OncePerRequestFilter {
     Logger logger = LogManager.getLogger();
 
+    Set<String> pathsNotRequiringAuth = Set.of("/version");gi
+
     private final UserRepository userRepo;
 
     public FilterRequests(UserRepository userRepo) {
         this.userRepo = userRepo;
+    }
+
+    private void breakDueToAuthMissing(HttpServletResponse response) throws IOException {
+        response.sendError(403, "Not authorized to access this resource. Please try again with a valid token.");
     }
 
     @Override
@@ -40,6 +47,15 @@ public class FilterRequests extends OncePerRequestFilter {
             logger.warn("Null token received on request for {}", request.getRequestURI());
             logger.warn("Headers look like: {}", request.getHeaderNames().toString());
             logger.warn("Auth header looks like: {}", request.getHeader("Authorization"));
+            String path = request.getRequestURI();
+            if(pathsNotRequiringAuth.contains(path)) {
+                doFilter(request, response, filterChain);
+                return;
+            }
+            else {
+                breakDueToAuthMissing(response);
+                return;
+            }
         }
 
         String[] chunks = token.split("\\.");
@@ -63,6 +79,6 @@ public class FilterRequests extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return "/api/users".equals(path) || path.contains("h2-console") || path.contains("/chat");
+        return path.contains("h2-console") || path.contains("/chat");
     }
 }
