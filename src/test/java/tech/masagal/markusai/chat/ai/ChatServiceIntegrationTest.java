@@ -129,7 +129,7 @@ public class ChatServiceIntegrationTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
                 .thenReturn(responseDtoEntity);
 
-        ChatMessage message = chatService.respondToUserMessage(new ChatMessage("Hey", ChatMessage.Role.USER));
+        ChatMessage message = chatService.respondToUserMessage(null, new ChatMessage("Hey", ChatMessage.Role.USER));
 
         User mockAdmin = mock(User.class);
         when(mockAdmin.getIsAdmin()).thenReturn(true);
@@ -159,7 +159,7 @@ public class ChatServiceIntegrationTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
                 .thenReturn(responseDtoEntity);
 
-        ChatMessage message = chatService.respondToUserMessage(new ChatMessage("Hey", ChatMessage.Role.USER));
+        ChatMessage message = chatService.respondToUserMessage(null, new ChatMessage("Hey", ChatMessage.Role.USER));
 
         InventoryItem item = inventoryService.getAll().stream()
                 .filter((i) -> i.getProduct().getId().equals(1L))

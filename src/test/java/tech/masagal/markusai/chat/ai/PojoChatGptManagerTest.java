@@ -175,7 +175,7 @@ class PojoChatGptManagerTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
                 .thenReturn(responseDtoEntity);
 
-        ChatResult result = manager.getChatCompletion(List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
+        ChatResult result = manager.getChatCompletion(null, List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
 
         assertTrue(result.request().isPresent());
         /*assertFalse(result.request().get().getProducts().isEmpty());
@@ -199,7 +199,7 @@ class PojoChatGptManagerTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
                 .thenReturn(responseDtoEntity);
 
-        ChatResult result = manager.getChatCompletion(List.of(new ChatMessage("We are out of blue markers!", ChatMessage.Role.USER)));
+        ChatResult result = manager.getChatCompletion(null, List.of(new ChatMessage("We are out of blue markers!", ChatMessage.Role.USER)));
 
         assertTrue(result.inventoryUpdateRequest().isPresent());
         assertEquals(0, result.inventoryUpdateRequest().get().newQuantity());
@@ -221,7 +221,7 @@ class PojoChatGptManagerTest {
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(ChatGptResponseDto.class)))
                 .thenReturn(responseDtoEntity);
 
-        manager.getChatCompletion(List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
+        manager.getChatCompletion(null, List.of(new ChatMessage("Hello!", ChatMessage.Role.USER)));
 
     }
 }

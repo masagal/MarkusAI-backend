@@ -51,11 +51,10 @@ public class ChatGptManager implements AiManager {
         headers.setBearerAuth(apiKey);
     }
 
-    ResponseEntity<ChatGptResponseDto> getResponse(List<ChatMessage> conversationHistory) throws Exception {
+    ResponseEntity<ChatGptResponseDto> getResponse(User user, List<ChatMessage> conversationHistory) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         ChatMessage systemMessage = context.getBean(ChatMessage.class);
-        User user = context.getBean("user", User.class);
         ChatMessage systemMessage2 = new ChatMessage(systemMessage.content() + "\nYou are talking to: " + user.getName(), ChatMessage.Role.SYSTEM);
         logger.info("telling chat they are talking to " + user.getName());
 
@@ -68,7 +67,7 @@ public class ChatGptManager implements AiManager {
     }
 
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
-        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+        ResponseEntity<ChatGptResponseDto> response = getResponse(null, conversationHistory);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();
@@ -84,8 +83,8 @@ public class ChatGptManager implements AiManager {
     }
 
     @Override
-    public ChatResult getChatCompletion(List<ChatMessage> conversationHistory) throws Exception {
-        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+    public ChatResult getChatCompletion(User user, List<ChatMessage> conversationHistory) throws Exception {
+        ResponseEntity<ChatGptResponseDto> response = getResponse(user, conversationHistory);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();

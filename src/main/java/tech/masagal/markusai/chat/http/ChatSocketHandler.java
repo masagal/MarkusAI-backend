@@ -60,7 +60,6 @@ public class ChatSocketHandler extends TextWebSocketHandler {
             try {
                 SubDto sub = new ObjectMapper().readValue(payload, SubDto.class);
                 User user = userRepo.findByClerkId(sub.sub());
-                context.getBeanFactory().registerSingleton("user", user);
                 session.getAttributes().put("user", user);
                 return;
             } catch (Exception ex) {
@@ -75,7 +74,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         }
 
         try {
-            ChatMessage response = chatService.respondToUserMessage(new ChatMessage(message, ChatMessage.Role.USER));
+            ChatMessage response = chatService.respondToUserMessage(user, new ChatMessage(message, ChatMessage.Role.USER));
             session.sendMessage(response.getTextMessage());
         } catch (Exception e) {
             // Log error and close session with server error status
@@ -98,8 +97,6 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         logger.info("WebSocket connection closed: {} with status: {}", session.getId(), status);
-        context.getBeanFactory().destroyBean(context.getBean("user", User.class));
-        // Clear the conversation history when the session is closed
         chatService.clearHistory();
     }
 }
