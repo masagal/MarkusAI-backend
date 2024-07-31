@@ -20,7 +20,8 @@ import java.util.Set;
 public class FilterRequests extends OncePerRequestFilter {
     Logger logger = LogManager.getLogger();
 
-    Set<String> pathsNotRequiringAuth = Set.of("/version");gi
+    Set<String> pathsNotRequiringAuth = Set.of("/version",
+            "/api/users/resolve-invitation");
 
     private final UserRepository userRepo;
 
@@ -63,15 +64,17 @@ public class FilterRequests extends OncePerRequestFilter {
 
         String payload = new String(decoder.decode(chunks[1]));
         SubDto sub = new ObjectMapper().readValue(payload, SubDto.class);
+        request.setAttribute("clerkId", sub.sub());
+
         User user = userRepo.findByClerkId(sub.sub());
-        if(user == null) {
+        request.setAttribute("user", user);
+
+        if(user == null && request.getParameter("token") == null) {
             response.sendError(400, "User not found");
-            logger.warn("Read a token that referred to a user not found in our systems. " +
+            logger.warn("There was a Clerk token, but the user did not exist, and did not have an invite. " +
                     "Killing the request and returning 400.");
             return;
         }
-
-        request.setAttribute("user", user);
 
         filterChain.doFilter(request, response);
     }

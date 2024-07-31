@@ -1,6 +1,8 @@
 package tech.masagal.markusai.user;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequest;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,16 @@ public class UserController {
         User user = (User) req.getAttribute("user");
 
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/resolve-invitation")
+    public ResponseEntity<UserDto> resolveInvitation(ServletRequest req, @RequestParam String token) {
+        String clerkId = (String) req.getAttribute("clerkId");
+        if(clerkId == null || clerkId.isEmpty()) {
+            throw new IllegalArgumentException("Valid token not supplied.");
+        }
+        User user = userService.associateUser(clerkId, token);
+        return ResponseEntity.ok(UserDto.fromUser(user));
     }
 
     @GetMapping

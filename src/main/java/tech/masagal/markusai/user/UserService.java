@@ -24,6 +24,7 @@ public class UserService {
     public User saveUser(User commissioner, User newUser) {
         LOGGER.info("Commissioner creating new user" + commissioner.getEmail() + " " + newUser.getEmail());
 
+        newUser.generateInvitationToken();
         userRepository.save(newUser);
 
         LOGGER.info("User saved in local database with ID: " + newUser.getId());
@@ -72,4 +73,19 @@ public class UserService {
         return userDto;
     }
 
+    public User associateUser(String clerkId, String token) {
+        User user = userRepository.findByInvitationToken(token);
+        if(user == null) {
+            LOGGER.warning("Received an invitation token that did not match to a user.");
+            throw new IllegalArgumentException("No user found to have this invitation token.");
+        }
+        if(user.getClerkId() != null) {
+            LOGGER.warning("Invitation token has already been used.");
+            throw new IllegalArgumentException("This invitation token has already been used.");
+        }
+
+        user.setClerkId(clerkId);
+        userRepository.save(user);
+        return user;
+    }
 }
