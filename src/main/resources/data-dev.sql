@@ -44,8 +44,6 @@ INSERT INTO users (email, name, is_admin, invitation_token) VALUES ('notyet@told
 
 INSERT INTO requests (user_id, is_approved) VALUES (1, false);
 INSERT INTO requests (user_id, is_approved) VALUES (1, true);
-INSERT INTO requests (user_id, is_approved) VALUES (3, false);
-INSERT INTO requests (user_id, is_approved) VALUES (3, true);
 INSERT INTO request_products (product_id, request_id, quantity) VALUES (1, 1, 10);
 INSERT INTO request_products (product_id, request_id, quantity) VALUES (2, 2, 5);
 INSERT INTO orders (user_id, status, approved_date, request_id) VALUES (5, 'PENDING', '2024-07-26T13:00:00', 2);

@@ -51,6 +51,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         logger.info("Received message: {}", message.getPayload());
 
+
         if(message.getPayload().contains("Set-Authorization")) {
             String token = message.getPayload().split(" ")[1];
             String[] chunks = token.split("\\.");

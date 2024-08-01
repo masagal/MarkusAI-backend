@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface RequestRepository extends ListCrudRepository<Request, Long> {
     List<Request> findAllByUser(User user);
+    Request findFirstByOrderByIdDesc();
 }

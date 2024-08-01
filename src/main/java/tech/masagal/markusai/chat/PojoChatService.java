@@ -46,10 +46,18 @@ public class PojoChatService extends ChatService {
         conversationHistory.add(userMessage);
         ChatResult result = this.aiManager.getChatCompletion(user, this.conversationHistory);
         if(result.request().isPresent()) {
-            processRequest(user, result.request().get());
+            try {
+                processRequest(user, result.request().get());
+            } catch(Exception ex) {
+                logger.info("request was null");
+            }
         }
         if(result.inventoryUpdateRequest().isPresent()) {
-            processInventoryUpdate(result.inventoryUpdateRequest().get());
+            try {
+                processInventoryUpdate(result.inventoryUpdateRequest().get());
+            } catch(Exception ex) {
+                logger.info("inventory update was null");
+            }
         }
         ChatMessage output = new ChatMessage(result.chatMessage(), ChatMessage.Role.ASSISTANT);
         conversationHistory.add(output);
@@ -80,7 +88,17 @@ public class PojoChatService extends ChatService {
         req.setProducts(requestedProducts);
         logger.info("request has product list size {}", req.getProducts().size());
 
-        requestRepo.save(req);
+        List<Request> allRequests = requestRepo.findAllByUser(user);
+        Request lastMadeRequest = requestRepo.findFirstByOrderByIdDesc();
+        if(lastMadeRequest.getUser().getId().longValue() == user.getId().longValue()) {
+            logger.info("dont");
+            return;
+        }
+
+        // HACK ALERT
+        boolean isDuplicate = allRequests.stream().anyMatch((request1 -> request1.isTheSameAs(req)));
+
+        if(!isDuplicate) requestRepo.save(req);
         logger.info("just a line to look at");
     }
 }

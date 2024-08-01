@@ -61,6 +61,7 @@ public class SystemMessageConfiguration {
                 If the user says we are out of something, both update the inventory and make a request.
                 If the user decides to take an item, update the inventory, but do not make a request.
                 The quantity must not be negative.
+                Do not send the request multiple times.
                 Be a little skeptical, do not always trust the user immediately, but do not persist in refusing.
                 Your response should always be a JSON object in the following format:
                      {
