@@ -1,6 +1,8 @@
 package tech.masagal.markusai.user;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequest;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
-        UserDto savedUser = userService.saveUser(userDto);
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto, ServletRequest req) {
+        User commissioner = (User) req.getAttribute("user");
+        if(!commissioner.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
+        User newUser = userDto.toUser();
+
+        UserDto savedUser = UserDto.fromUser(userService.saveUser(commissioner, newUser));
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
@@ -33,8 +41,23 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/resolve-invitation")
+    public ResponseEntity<UserDto> resolveInvitation(ServletRequest req, @RequestParam String token) {
+        String clerkId = (String) req.getAttribute("clerkId");
+        if(clerkId == null || clerkId.isEmpty()) {
+            throw new IllegalArgumentException("Valid token not supplied.");
+        }
+        User user = userService.associateUser(clerkId, token);
+        return ResponseEntity.ok(UserDto.fromUser(user));
+    }
+
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers(ServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        if(!user.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
+
         List<UserDto> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -46,7 +69,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, ServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        if(!user.getIsAdmin()) {
+            throw new IllegalArgumentException("Not authorized.");
+        }
+
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
