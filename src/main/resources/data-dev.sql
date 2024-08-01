@@ -39,6 +39,8 @@ INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('regular@
 INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('cypress+clerk_test@tolpuddle.tech', 'cypress admin', true, 'user_2jjMkCNC2oaUopPuZPwhtBlqdOA', 'https://akns-images.eonline.com/eol_images/Entire_Site/2020107/rs_1200x1200-201107114351-1200-kamala-harris.cm.11720.jpg?fit=around%7C1080:1080&output-quality=90&crop=1080:1080;center,top');
 INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('mathi.admin@gmail.com', 'Math math', true, 'user_2jm6AYThCDfPqMlHBO8jhwyPLMI', 'https://ca.slack-edge.com/TA01UCHBN-U06TG2P5L80-9509cd9eb3a9-512');
 INSERT INTO users (email, name, is_admin, clerk_id, image_url) VALUES ('alwaysthere@gmail.com', 'NonAdmin math', false, 'user_2jjIzGq8PO6mkRaF8aVabp4OVXR', 'https://www.gulflive.com/resizer/qP4Km5tGSOFi-Fr05NSxZSirjAs=/1280x0/smart/advancelocal-adapter-image-uploads.s3.amazonaws.com/image.gulflive.com/home/gulf-media/width2048/img/mississippi-press-entertainment/photo/s5x032-0877-9jpg-81525108288c26be.jpg');
+INSERT INTO users (email, name, is_admin, invitation_token) VALUES ('notyet@toldpuddle.tech', 'Jesse Invitedbutnotyetverified Stevenson', false, 'sample-token-set-in-dev-sql-abc123');
+
 
 INSERT INTO requests (user_id, is_approved) VALUES (1, false);
 INSERT INTO requests (user_id, is_approved) VALUES (1, true);

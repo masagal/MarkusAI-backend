@@ -2,6 +2,8 @@ package tech.masagal.markusai.user;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,6 +21,8 @@ public class User {
     private String clerkId;
 
     private String imageUrl;
+
+    private String invitationToken;
 
     public Long getId() {
         return id;
@@ -62,5 +66,20 @@ public class User {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getInvitationToken() {
+        return invitationToken;
+    }
+
+    public String generateInvitationToken() {
+        if(invitationToken != null) {
+            throw new IllegalStateException("There already exists an invitation URL for this user.");
+        }
+        if(clerkId != null) {
+            throw new IllegalStateException("This user is already associated with a Clerk identity.");
+        }
+        invitationToken = String.valueOf(UUID.randomUUID());
+        return invitationToken;
     }
 }

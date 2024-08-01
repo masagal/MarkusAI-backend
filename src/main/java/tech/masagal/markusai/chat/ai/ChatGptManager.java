@@ -3,6 +3,7 @@ package tech.masagal.markusai.chat.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.socket.WebSocketSession;
 import tech.masagal.markusai.chat.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tech.masagal.markusai.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +51,14 @@ public class ChatGptManager implements AiManager {
         headers.setBearerAuth(apiKey);
     }
 
-    ResponseEntity<ChatGptResponseDto> getResponse(List<ChatMessage> conversationHistory) throws Exception {
+    ResponseEntity<ChatGptResponseDto> getResponse(User user, List<ChatMessage> conversationHistory) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         ChatMessage systemMessage = context.getBean(ChatMessage.class);
+        ChatMessage systemMessage2 = new ChatMessage(systemMessage.content() + "\nYou are talking to: " + user.getName(), ChatMessage.Role.SYSTEM);
+        logger.info("telling chat they are talking to " + user.getName());
 
-        ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage)));
+        ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage2)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
         ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(dto), headers);
@@ -63,7 +67,7 @@ public class ChatGptManager implements AiManager {
     }
 
     public ChatMessage getNextResponse(List<ChatMessage> conversationHistory) throws Exception {
-        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+        ResponseEntity<ChatGptResponseDto> response = getResponse(null, conversationHistory);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();
@@ -79,8 +83,8 @@ public class ChatGptManager implements AiManager {
     }
 
     @Override
-    public ChatResult getChatCompletion(List<ChatMessage> conversationHistory) throws Exception {
-        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+    public ChatResult getChatCompletion(User user, List<ChatMessage> conversationHistory) throws Exception {
+        ResponseEntity<ChatGptResponseDto> response = getResponse(user, conversationHistory);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             List<ChatGptResponseDto.ChoicesDto> choices = response.getBody().choices();

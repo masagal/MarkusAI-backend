@@ -8,6 +8,7 @@ import tech.masagal.markusai.chat.ai.AiManager;
 import tech.masagal.markusai.chat.sql.ExtractSQL;
 import tech.masagal.markusai.chat.sql.SqlHandler;
 import org.springframework.stereotype.Service;
+import tech.masagal.markusai.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ChatService {
         this.sqlHandler = sqlHandler;
     }
 
-    public ChatMessage handleQuantity(ChatMessage incomingResponse) throws JsonProcessingException {
+    public ChatMessage handleQuantity(User user, ChatMessage incomingResponse) throws JsonProcessingException {
 
         ExtractSQL sql = new ObjectMapper().readValue(incomingResponse.content(), ExtractSQL.class);
         logger.info("Getting quantity, Statement: {}", sql.sqlStatement());
@@ -39,24 +40,24 @@ public class ChatService {
         return incomingResponse;
     }
 
-    public ChatMessage makeRequest(ChatMessage incomingResponse) throws JsonProcessingException {
+    public ChatMessage makeRequest(User user, ChatMessage incomingResponse) throws JsonProcessingException {
         ExtractSQL sql = new ObjectMapper().readValue(incomingResponse.content(), ExtractSQL.class);
         logger.info("Making request, Statement: {}", sql.sqlStatement());
         sqlHandler.execute(sql);
         return new ChatMessage("Check your request page to see if the request has been made!", ChatMessage.Role.ASSISTANT);
     }
 
-    public ChatMessage respondToUserMessage(ChatMessage userMessage) throws Exception {
+    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage) throws Exception {
         conversationHistory.add(userMessage);
         ChatMessage response = aiManager.getNextResponse(conversationHistory);
         conversationHistory.add(response);
 
         logger.info("Response from gpt: " + response);
         if (response.content().contains("sqlStatement") && response.content().contains("SELECT quantity FROM inventory_items")) {
-            response = handleQuantity(response);
+            response = handleQuantity(user, response);
         }
         if (userMessage.content().contains("yes") && response.content().contains("INSERT INTO")) {
-            response = makeRequest(response);
+            response = makeRequest(user, response);
         }
 
         logger.info("Sending response: {}", response.content());
