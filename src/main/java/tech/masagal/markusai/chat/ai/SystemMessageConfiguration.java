@@ -2,6 +2,7 @@ package tech.masagal.markusai.chat.ai;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.socket.WebSocketSession;
 import tech.masagal.markusai.chat.ChatMessage;
 import tech.masagal.markusai.inventory.model.InventoryItem;
 import tech.masagal.markusai.inventory.service.InventoryService;

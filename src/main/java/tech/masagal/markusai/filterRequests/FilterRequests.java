@@ -75,6 +75,7 @@ public class FilterRequests extends OncePerRequestFilter {
                     "Killing the request and returning 400.");
             return;
         }
+        logger.info("user filter completed, inserting user data into attribute");
 
         filterChain.doFilter(request, response);
     }

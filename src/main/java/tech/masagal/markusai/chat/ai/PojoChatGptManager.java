@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import tech.masagal.markusai.user.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,8 @@ public class PojoChatGptManager extends ChatGptManager implements AiManager {
     }
 
     @Override
-    public ChatResult getChatCompletion(List<ChatMessage> conversationHistory) throws Exception {
-        ResponseEntity<ChatGptResponseDto> response = getResponse(conversationHistory);
+    public ChatResult getChatCompletion(User user, List<ChatMessage> conversationHistory) throws Exception {
+        ResponseEntity<ChatGptResponseDto> response = getResponse(user, conversationHistory);
 
         if(response.getStatusCode().is2xxSuccessful()) {
             try {

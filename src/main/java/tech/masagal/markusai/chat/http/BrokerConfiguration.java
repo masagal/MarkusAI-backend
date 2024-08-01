@@ -8,16 +8,19 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import tech.masagal.markusai.user.UserRepository;
 
 @Configuration
 @EnableWebSocket
 public class BrokerConfiguration implements WebSocketConfigurer {
     AiManager aiManager;
     ChatService chatService;
+    UserRepository userRepo;
 
-    public BrokerConfiguration(AiManager aiManager, ChatService chatService) {
+    public BrokerConfiguration(AiManager aiManager, ChatService chatService, UserRepository userRepo) {
         this.aiManager = aiManager;
         this.chatService = chatService;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -27,6 +30,6 @@ public class BrokerConfiguration implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler chatHandler() {
-        return new ChatSocketHandler(aiManager, chatService);
+        return new ChatSocketHandler(aiManager, chatService, userRepo);
     }
 }

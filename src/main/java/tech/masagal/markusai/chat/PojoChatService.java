@@ -2,6 +2,7 @@ package tech.masagal.markusai.chat;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 import tech.masagal.markusai.chat.ai.ChatResult;
 import tech.masagal.markusai.chat.ai.PojoChatGptManager;
 import tech.masagal.markusai.chat.sql.SqlHandler;
@@ -29,21 +30,23 @@ public class PojoChatService extends ChatService {
     private final ProductDbRepo productDbRepo;
     private final UserRepository userRepo;
     private final RequestRepository requestRepo;
+    private final ApplicationContext context;
 
-    public PojoChatService(PojoChatGptManager aiManager, SqlHandler sqlHandler, InventoryService inventoryService, ProductDbRepo productDbRepo, UserRepository userRepo, RequestRepository requestRepo ) {
+    public PojoChatService(PojoChatGptManager aiManager, SqlHandler sqlHandler, InventoryService inventoryService, ProductDbRepo productDbRepo, UserRepository userRepo, RequestRepository requestRepo, ApplicationContext context) {
         super(aiManager, sqlHandler);
         this.inventoryService = inventoryService;
         this.productDbRepo = productDbRepo;
         this.userRepo = userRepo;
         this.requestRepo = requestRepo;
+        this.context = context;
     }
 
     @Override
-    public ChatMessage respondToUserMessage(ChatMessage userMessage) throws Exception {
+    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage) throws Exception {
         conversationHistory.add(userMessage);
-        ChatResult result = this.aiManager.getChatCompletion(this.conversationHistory);
+        ChatResult result = this.aiManager.getChatCompletion(user, this.conversationHistory);
         if(result.request().isPresent()) {
-            processRequest(result.request().get());
+            processRequest(user, result.request().get());
         }
         if(result.inventoryUpdateRequest().isPresent()) {
             processInventoryUpdate(result.inventoryUpdateRequest().get());
@@ -62,8 +65,7 @@ public class PojoChatService extends ChatService {
         inventoryService.updateQuantity(item, request.newQuantity());
     }
 
-    private void processRequest(ChatResult.ChatResultRequest request) {
-        User user = userRepo.getReferenceById(1L);
+    private void processRequest(User user, ChatResult.ChatResultRequest request) {
         List<RequestProduct> requestedProducts = request.products().stream()
                         .map((product) -> {
                             Product p = productDbRepo.findById(Long.valueOf((product.productId()))).orElseThrow(NoSuchElementException::new);
