@@ -60,7 +60,7 @@ public class ChatGptManager implements AiManager {
 
         ArrayList<ChatGptMessageDto> messages = new ArrayList<>(List.of(new ChatGptMessageDto(systemMessage2)));
         messages.addAll(conversationHistory.stream().map(ChatGptMessageDto::new).toList());
-        ChatGptInputDto dto = new ChatGptInputDto("gpt-4o-mini", messages, 150);
+        ChatGptInputDto dto = new ChatGptInputDto("gpt-4o", messages, 150);
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(dto), headers);
 
         return restTemplate.postForEntity(API_URL, entity, ChatGptResponseDto.class);
