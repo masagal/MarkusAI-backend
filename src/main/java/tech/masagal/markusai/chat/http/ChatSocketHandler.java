@@ -75,7 +75,12 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         }
 
         try {
-            ChatMessage response = chatService.respondToUserMessage(user, new ChatMessage(message, ChatMessage.Role.USER));
+            Boolean hasMadeRequest = (Boolean) session.getAttributes().get("hasMadeRequest");
+            if(hasMadeRequest == null) {
+                hasMadeRequest = Boolean.FALSE;
+                session.getAttributes().put("hasMadeRequest", hasMadeRequest);
+            }
+            ChatMessage response = chatService.respondToUserMessage(user, new ChatMessage(message, ChatMessage.Role.USER), hasMadeRequest);
             session.sendMessage(response.getTextMessage());
         } catch (Exception e) {
             // Log error and close session with server error status

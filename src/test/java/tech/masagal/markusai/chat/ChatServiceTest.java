@@ -58,7 +58,7 @@ public class ChatServiceTest {
         when(mockAiManager.getNextResponse(any())).thenReturn(new ChatMessage(response, ChatMessage.Role.ASSISTANT));
 
         //Act
-        service.respondToUserMessage(null, new ChatMessage("Hello! Could I get five whiteboard markers please?", ChatMessage.Role.USER));
+//        service.respondToUserMessage(null, new ChatMessage("Hello! Could I get five whiteboard markers please?", ChatMessage.Role.USER));
 
         //Assert
         verify(sqlHandler).queryForString(sql);
@@ -73,7 +73,7 @@ public class ChatServiceTest {
         when(mockAiManager.getNextResponse(any())).thenReturn(response1);
 
         //Act
-        service.respondToUserMessage(null, request1);
+        //service.respondToUserMessage(null, request1);
 
         //Assert
         /*

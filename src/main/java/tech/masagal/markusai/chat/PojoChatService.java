@@ -42,12 +42,13 @@ public class PojoChatService extends ChatService {
     }
 
     @Override
-    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage) throws Exception {
+    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage, Boolean hasMadeRequest) throws Exception {
         conversationHistory.add(userMessage);
         ChatResult result = this.aiManager.getChatCompletion(user, this.conversationHistory);
-        if(result.request().isPresent()) {
+        if(result.request().isPresent() && hasMadeRequest.equals(Boolean.FALSE)) {
             try {
                 processRequest(user, result.request().get());
+                hasMadeRequest = Boolean.TRUE;
             } catch(Exception ex) {
                 logger.info("request was null");
             }
@@ -88,17 +89,7 @@ public class PojoChatService extends ChatService {
         req.setProducts(requestedProducts);
         logger.info("request has product list size {}", req.getProducts().size());
 
-        List<Request> allRequests = requestRepo.findAllByUser(user);
-        Request lastMadeRequest = requestRepo.findFirstByOrderByIdDesc();
-        if(lastMadeRequest.getUser().getId().longValue() == user.getId().longValue()) {
-            logger.info("dont");
-            return;
-        }
-
-        // HACK ALERT
-        boolean isDuplicate = allRequests.stream().anyMatch((request1 -> request1.isTheSameAs(req)));
-
-        if(!isDuplicate) requestRepo.save(req);
+        requestRepo.save(req);
         logger.info("just a line to look at");
     }
 }

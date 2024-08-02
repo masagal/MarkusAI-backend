@@ -47,7 +47,7 @@ public class ChatService {
         return new ChatMessage("Check your request page to see if the request has been made!", ChatMessage.Role.ASSISTANT);
     }
 
-    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage) throws Exception {
+    public ChatMessage respondToUserMessage(User user, ChatMessage userMessage, Boolean hasMadeRequest) throws Exception {
         conversationHistory.add(userMessage);
         ChatMessage response = aiManager.getNextResponse(conversationHistory);
         conversationHistory.add(response);
